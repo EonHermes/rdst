@@ -13,27 +13,29 @@ cascading impact on water / food / energy downstream — in real units.
 
 ---
 
-## The tension
+## The question nobody can answer today
 
 The Nile serves ~500 M people across 11 countries. Three competing uses:
 
-- **Ethiopia** — hydropower via GERD (6.45 GW nameplate).
-- **Sudan** — irrigation via Gezira (~900 000 ha).
+- **Ethiopia** — hydropower via GERD (6.45 GW nameplate, Africa's largest dam).
+- **Sudan** — irrigation via Gezira (~900 000 ha of cotton and wheat).
 - **Egypt** — water security for 100 M people + the Delta.
 
-Policy debates happen in m³/s. Headlines happen in "crisis."
+Policy debates happen in m³/s. Headlines scream "water wars."
 There is nothing in between that a decision-maker can actually *try*.
+
+When Ethiopia fills GERD faster, the cascade hits downstream: Sudan loses irrigation water, Egypt's drinking-water service drops, delta flows violate environmental constraints. These effects are **hard to quantify without a model** — and impossible to test without risking real communities.
 
 ---
 
 ## What we built
 
-A node-graph digital twin of the basin:
+A physics-based digital twin of the Nile basin — satellite data connected to real-world KPIs:
 
-- **19 nodes** — Lake Victoria, Lake Tana, Sudd wetland, GERD, Aswan, Egyptian Delta, ...
-- **20 years** of ERA5 monthly forcings, per node.
-- **Sentinel-2 NDVI** over irrigated zones as the food-KPI validator.
-- **Three sliders, three KPIs, one score, compare view.**
+- **19 nodes** along the main stem: Lake Victoria → Lake Tana → GERD → Roseires → Merowe → Khartoum → Aswan → Delta, plus the Sudd wetland and both source branches.
+- **75+ years of climate data** (1950–2026) via ERA5 legacy datasets — enables drought/flood trend analysis across decades, not just recent history.
+- **Sentinel-2 NDVI + CGLS** over irrigated zones as the food-KPI validator — *the model's food KPI is validated against what satellites actually saw*.
+- **Three sliders, three KPIs, one score, compare view.** Full 240-month sim runs in ~10 ms.
 
 ---
 
@@ -77,14 +79,14 @@ GERD 145 m · Aswan 111 m · Merowe 68 m · Roseires 68 m · Tekeze 185 m
 
 ---
 
-## Calibration
+## Calibration — honest numbers
 
 ![w:700](calibration-report.html)
 
 Simulated vs. observed monthly discharge at Aswan, 2005–2024.
 Relative RMSE ~93 % — calibration in progress (grid-search over catchment scales + Sudd evaporation).
 
-*(Transparent about uncertainty: the model structure is sound; parameters are still being tuned against GRDC data.)*
+**Why this matters:** Mass conservation is verified to <0.1% in a golden test. The model structure is physically sound; parameters are being tuned against GRDC data. We're transparent about uncertainty because trust is the whole point.
 
 ---
 
@@ -123,10 +125,11 @@ still tells the story.)*
 
 ## What's next
 
-- Tributary-level resolution (Sobat, Bahr el Ghazal).
-- Real head–storage rating curves at each dam.
-- Coupling with **CMEMS** (delta salinity) and **CAMS** (dust over irrigated areas).
-- Forward scenarios using **CMIP6** downscaled climate.
+- **Calibration convergence:** Tune catchment scales + Sudd evaporation until <20% monthly RMSE at Aswan.
+- **Pareto optimizer:** Grid search over GERD release schedules to suggest Pareto-better policies given user-defined water/food/energy weights.
+- **Finer granularity:** Tributary-level resolution (Sobat, Bahr el Ghazal) and governorate-level irrigation zones.
+- **Climate scenarios:** Couple with CMIP6 downscaled projections for forward-looking drought/flood planning.
+- **Open-source release:** Publish the full stack as a reusable basin-twin framework — the dataloader + sim engine are generic enough to adapt to any river system.
 
 ---
 

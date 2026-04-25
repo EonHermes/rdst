@@ -1,0 +1,367 @@
+=== Starting rdst upstream sync and pitch deck update at Sat Apr 25 02:00:01 PM CEST 2026 ===
+Fetching upstream...
+From github.com:lindestad/rdst
+   00c7636..575fb0a  main       -> upstream/main
+   aaf1e6c..d961c13  storm      -> upstream/storm
+Checking if we can fast-forward...
+Merging upstream/main into main...
+Merge made by the 'ort' strategy.
+ README.md                                          |    14 +-
+ horizon/nrsm/README.md                             |    50 +-
+ horizon/nrsm/crates/nrsm-cli/src/main.rs           |   241 +-
+ .../crates/nrsm-dataloader/src/horizon_data.rs     |   700 +
+ horizon/nrsm/crates/nrsm-dataloader/src/lib.rs     |     2 +
+ horizon/nrsm/crates/nrsm-dataloader/src/main.rs    |    90 +-
+ hydmod/catch_Q_all.txt                             | 23378 ++++++++++++++++
+ hydmod/catchments.txt                              |    14 +
+ hydmod/climate_stations_lat_lon.txt                |    46 +
+ hydmod/hydmod.py                                   |   257 +
+ hydmod/hydro_Aswand.txt                            | 23378 ++++++++++++++++
+ hydmod/hydro_Cairo.txt                             | 23378 ++++++++++++++++
+ hydmod/hydro_GERD.txt                              | 23378 ++++++++++++++++
+ hydmod/hydro_Karthoum.txt                          | 23378 ++++++++++++++++
+ hydmod/hydro_Kashm.txt                             | 23378 ++++++++++++++++
+ hydmod/hydro_Merowe.txt                            | 23378 ++++++++++++++++
+ hydmod/hydro_Ozentari.txt                          | 23378 ++++++++++++++++
+ hydmod/hydro_Roseires.txt                          | 23378 ++++++++++++++++
+ hydmod/hydro_Singa.txt                             | 23378 ++++++++++++++++
+ hydmod/hydro_SouthWest.txt                         | 23378 ++++++++++++++++
+ hydmod/hydro_Tana.txt                              | 23378 ++++++++++++++++
+ hydmod/hydro_Tsengh.txt                            | 23378 ++++++++++++++++
+ hydmod/hydro_Victoria.txt                          | 23378 ++++++++++++++++
+ hydmod/model.py                                    |    78 +
+ hydmod/tp_all.txt                                  |  5481 ++++
+ .../cgls_cache/aswand_2015_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/aswand_2015_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/aswand_2016_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/aswand_2016_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/aswand_2017_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/aswand_2017_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/aswand_2018_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/aswand_2018_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/aswand_2019_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/aswand_2019_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/cairo_2015_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/cairo_2015_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/cairo_2016_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/cairo_2016_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/cairo_2017_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/cairo_2017_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/cairo_2018_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/cairo_2018_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/cairo_2019_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/cairo_2019_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/gerd_2015_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/gerd_2015_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/gerd_2016_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/gerd_2016_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/gerd_2017_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/gerd_2017_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/gerd_2018_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/gerd_2018_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/gerd_2019_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/gerd_2019_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/karthoum_2015_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/karthoum_2015_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/karthoum_2016_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/karthoum_2016_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/karthoum_2017_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/karthoum_2017_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/karthoum_2018_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/karthoum_2018_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/karthoum_2019_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/karthoum_2019_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/kashm_2015_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/kashm_2015_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/kashm_2016_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/kashm_2016_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/kashm_2017_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/kashm_2017_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/kashm_2018_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/kashm_2018_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/kashm_2019_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/kashm_2019_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/merowe_2015_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/merowe_2015_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/merowe_2016_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/merowe_2016_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/merowe_2017_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/merowe_2017_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/merowe_2018_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/merowe_2018_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/merowe_2019_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/merowe_2019_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/ozentari_2015_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/ozentari_2015_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/ozentari_2016_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/ozentari_2016_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/ozentari_2017_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/ozentari_2017_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/ozentari_2018_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/ozentari_2018_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/ozentari_2019_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/ozentari_2019_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/roseires_2015_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/roseires_2015_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/roseires_2016_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/roseires_2016_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/roseires_2017_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/roseires_2017_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/roseires_2018_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/roseires_2018_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/roseires_2019_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/roseires_2019_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/singa_2015_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/singa_2015_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/singa_2016_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/singa_2016_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/singa_2017_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/singa_2017_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/singa_2018_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/singa_2018_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/singa_2019_crops_frac.meta.npy      |   Bin 0 -> 144 bytes
+ .../cgls_cache/singa_2019_crops_frac.npy           |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/southwest_2015_crops_frac.meta.npy  |   Bin 0 -> 144 bytes
+ .../cgls_cache/southwest_2015_crops_frac.npy       |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/southwest_2016_crops_frac.meta.npy  |   Bin 0 -> 144 bytes
+ .../cgls_cache/southwest_2016_crops_frac.npy       |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/southwest_2017_crops_frac.meta.npy  |   Bin 0 -> 144 bytes
+ .../cgls_cache/southwest_2017_crops_frac.npy       |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/southwest_2018_crops_frac.meta.npy  |   Bin 0 -> 144 bytes
+ .../cgls_cache/southwest_2018_crops_frac.npy       |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/southwest_2019_crops_frac.meta.npy  |   Bin 0 -> 144 bytes
+ .../cgls_cache/southwest_2019_crops_frac.npy       |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tana_2015_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/tana_2015_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tana_2016_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/tana_2016_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tana_2017_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/tana_2017_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tana_2018_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/tana_2018_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tana_2019_crops_frac.meta.npy       |   Bin 0 -> 144 bytes
+ .../cgls_cache/tana_2019_crops_frac.npy            |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tsengh_2015_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/tsengh_2015_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tsengh_2016_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/tsengh_2016_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tsengh_2017_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/tsengh_2017_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tsengh_2018_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/tsengh_2018_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/tsengh_2019_crops_frac.meta.npy     |   Bin 0 -> 144 bytes
+ .../cgls_cache/tsengh_2019_crops_frac.npy          |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/victoria_2015_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/victoria_2015_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/victoria_2016_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/victoria_2016_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/victoria_2017_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/victoria_2017_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/victoria_2018_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/victoria_2018_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ .../cgls_cache/victoria_2019_crops_frac.meta.npy   |   Bin 0 -> 144 bytes
+ .../cgls_cache/victoria_2019_crops_frac.npy        |   Bin 0 -> 1016192 bytes
+ main/modules/food_production/egypt_ndvi.tiff       |   Bin 0 -> 940549 bytes
+ .../era5_cache/aswand_1950_2026.csv                |   916 +
+ .../food_production/era5_cache/cairo_1950_2026.csv |   916 +
+ .../food_production/era5_cache/gerd_1950_2026.csv  |   916 +
+ .../era5_cache/karthoum_1950_2026.csv              |   916 +
+ .../food_production/era5_cache/kashm_1950_2026.csv |   916 +
+ .../era5_cache/merowe_1950_2026.csv                |   916 +
+ .../era5_cache/ozentari_1950_2026.csv              |   916 +
+ .../era5_cache/roseires_1950_2026.csv              |   916 +
+ .../food_production/era5_cache/singa_1950_2026.csv |   916 +
+ .../era5_cache/southwest_1950_2026.csv             |   916 +
+ .../food_production/era5_cache/tana_1950_2026.csv  |   916 +
+ .../era5_cache/tsengh_1950_2026.csv                |   916 +
+ .../era5_cache/victoria_1950_2026.csv              |   916 +
+ main/modules/food_production/nile.yaml             |   387 +
+ main/modules/food_production/nile_agri_area.png    |   Bin 0 -> 226902 bytes
+ main/modules/food_production/nile_agri_area.py     |   290 +
+ main/modules/food_production/nile_crop_config.yaml |   150 +
+ main/modules/food_production/nile_crop_water.py    |   355 +
+ main/modules/food_production/nile_et0.png          |   Bin 0 -> 1368602 bytes
+ main/modules/food_production/nile_water_demand.csv | 27850 +++++++++++++++++++
+ main/modules/food_production/nile_water_demand.png |   Bin 0 -> 1226544 bytes
+ main/modules/food_production/nile_water_usage.png  |   Bin 0 -> 446387 bytes
+ 178 files changed, 375195 insertions(+), 10 deletions(-)
+ create mode 100644 horizon/nrsm/crates/nrsm-dataloader/src/horizon_data.rs
+ create mode 100644 hydmod/catch_Q_all.txt
+ create mode 100644 hydmod/catchments.txt
+ create mode 100644 hydmod/climate_stations_lat_lon.txt
+ create mode 100644 hydmod/hydmod.py
+ create mode 100644 hydmod/hydro_Aswand.txt
+ create mode 100644 hydmod/hydro_Cairo.txt
+ create mode 100644 hydmod/hydro_GERD.txt
+ create mode 100644 hydmod/hydro_Karthoum.txt
+ create mode 100644 hydmod/hydro_Kashm.txt
+ create mode 100644 hydmod/hydro_Merowe.txt
+ create mode 100644 hydmod/hydro_Ozentari.txt
+ create mode 100644 hydmod/hydro_Roseires.txt
+ create mode 100644 hydmod/hydro_Singa.txt
+ create mode 100644 hydmod/hydro_SouthWest.txt
+ create mode 100644 hydmod/hydro_Tana.txt
+ create mode 100644 hydmod/hydro_Tsengh.txt
+ create mode 100644 hydmod/hydro_Victoria.txt
+ create mode 100644 hydmod/model.py
+ create mode 100644 hydmod/tp_all.txt
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/aswand_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/cairo_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/gerd_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/karthoum_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/kashm_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/merowe_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/ozentari_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/roseires_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/singa_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/southwest_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tana_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/tsengh_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2015_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2015_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2016_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2016_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2017_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2017_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2018_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2018_crops_frac.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2019_crops_frac.meta.npy
+ create mode 100644 main/modules/food_production/cgls_cache/victoria_2019_crops_frac.npy
+ create mode 100644 main/modules/food_production/egypt_ndvi.tiff
+ create mode 100644 main/modules/food_production/era5_cache/aswand_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/cairo_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/gerd_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/karthoum_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/kashm_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/merowe_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/ozentari_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/roseires_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/singa_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/southwest_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/tana_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/tsengh_1950_2026.csv
+ create mode 100644 main/modules/food_production/era5_cache/victoria_1950_2026.csv
+ create mode 100644 main/modules/food_production/nile.yaml
+ create mode 100644 main/modules/food_production/nile_agri_area.png
+ create mode 100644 main/modules/food_production/nile_agri_area.py
+ create mode 100644 main/modules/food_production/nile_crop_config.yaml
+ create mode 100644 main/modules/food_production/nile_crop_water.py
+ create mode 100644 main/modules/food_production/nile_et0.png
+ create mode 100644 main/modules/food_production/nile_water_demand.csv
+ create mode 100644 main/modules/food_production/nile_water_demand.png
+ create mode 100644 main/modules/food_production/nile_water_usage.png
+Push to origin/main...
+To github.com:EonHermes/rdst.git
+   6866897..8313f42  main -> main
+Pitch deck already exists. Appending any new insights from design docs...
+Pitch deck found at /home/dl/rdst/pitch_deck/pitch_deck.md. No automatic update performed.
+No changes to pitch deck.
+=== Finished at Sat Apr 25 02:00:09 PM CEST 2026 ===

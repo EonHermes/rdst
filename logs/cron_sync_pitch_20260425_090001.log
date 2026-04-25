@@ -1,0 +1,125 @@
+=== Starting rdst upstream sync and pitch deck update at Sat Apr 25 09:00:01 AM CEST 2026 ===
+Fetching upstream...
+From github.com:lindestad/rdst
+   b63d779..250dd2c  main       -> upstream/main
+Checking if we can fast-forward...
+Merging upstream/main into main...
+Merge made by the 'ort' strategy.
+ agriculture/METHODS.md                             |   175 +-
+ agriculture/copernicus_egypt_agriculture.py        |    42 +-
+ agriculture/era5_cache/aswand_1950_2026.csv        |     8 +-
+ agriculture/era5_cache/cairo_1950_2026.csv         |     8 +-
+ agriculture/era5_cache/gerd_1950_2026.csv          |    80 +-
+ agriculture/era5_cache/karthoum_1950_2026.csv      |    44 +-
+ agriculture/era5_cache/kashm_1950_2026.csv         |    62 +-
+ agriculture/era5_cache/merowe_1950_2026.csv        |    10 +-
+ agriculture/era5_cache/ozentari_1950_2026.csv      |    74 +-
+ agriculture/era5_cache/roseires_1950_2026.csv      |    56 +-
+ agriculture/era5_cache/singa_1950_2026.csv         |    84 +-
+ agriculture/era5_cache/southwest_1950_2026.csv     |    80 +-
+ agriculture/era5_cache/tana_1950_2026.csv          |    30 +-
+ agriculture/era5_cache/tsengh_1950_2026.csv        |    66 +-
+ agriculture/era5_cache/victoria_1950_2026.csv      |    10 +-
+ agriculture/nile_aswand_water.csv                  |   778 +-
+ agriculture/nile_cairo_water.csv                   |   826 +-
+ agriculture/nile_et0.png                           |   Bin 459162 -> 1368602 bytes
+ agriculture/nile_gerd_water.csv                    |  6576 +--
+ agriculture/nile_karthoum_water.csv                |  3538 +-
+ agriculture/nile_kashm_water.csv                   |  5028 +-
+ agriculture/nile_merowe_water.csv                  |   954 +-
+ agriculture/nile_ozentari_water.csv                |  5084 +-
+ agriculture/nile_roseires_water.csv                |  5020 +-
+ agriculture/nile_singa_water.csv                   |  6398 +--
+ agriculture/nile_southwest_water.csv               |  6376 +--
+ agriculture/nile_tana_water.csv                    |  2218 +-
+ agriculture/nile_tsengh_water.csv                  |  5614 +--
+ agriculture/nile_victoria_water.csv                |   766 +-
+ agriculture/nile_water_usage.png                   |   Bin 452440 -> 446387 bytes
+ agriculture/nile_water_usage_all.csv               | 49176 +++++++++----------
+ agriculture/plot_et0.py                            |    12 +-
+ electricity_price/electricity_price_estimator.py   |   317 +
+ electricity_price/electricity_prices.png           |   Bin 0 -> 223450 bytes
+ electricity_price/nile.yaml                        |   387 +
+ electricity_price/price_csv/aswand.csv             |   367 +
+ electricity_price/price_csv/cairo.csv              |   367 +
+ electricity_price/price_csv/gerd.csv               |   367 +
+ electricity_price/price_csv/karthoum.csv           |   367 +
+ electricity_price/price_csv/kashm.csv              |   367 +
+ electricity_price/price_csv/merowe.csv             |   367 +
+ electricity_price/price_csv/ozentari.csv           |   367 +
+ electricity_price/price_csv/roseires.csv           |   367 +
+ electricity_price/price_csv/singa.csv              |   367 +
+ electricity_price/price_csv/southwest.csv          |   367 +
+ electricity_price/price_csv/tana.csv               |   367 +
+ electricity_price/price_csv/tsengh.csv             |   367 +
+ electricity_price/price_csv/victoria.csv           |   367 +
+ main/modules/food_production/METHODS.md            |   325 +
+ main/modules/food_production/aswand_1950_2026.csv  |   916 +
+ main/modules/food_production/cairo_1950_2026.csv   |   916 +
+ .../copernicus_egypt_agriculture.py                |   791 +
+ main/modules/food_production/gerd_1950_2026.csv    |   916 +
+ .../modules/food_production/karthoum_1950_2026.csv |   916 +
+ main/modules/food_production/kashm_1950_2026.csv   |   916 +
+ main/modules/food_production/merowe_1950_2026.csv  |   916 +
+ main/modules/food_production/nile_aswand_water.csv |   778 +-
+ main/modules/food_production/nile_cairo_water.csv  |   826 +-
+ main/modules/food_production/nile_gerd_water.csv   |  6576 +--
+ .../food_production/nile_karthoum_water.csv        |  3538 +-
+ main/modules/food_production/nile_kashm_water.csv  |  5028 +-
+ main/modules/food_production/nile_merowe_water.csv |   954 +-
+ .../food_production/nile_ozentari_water.csv        |  5084 +-
+ .../food_production/nile_roseires_water.csv        |  5020 +-
+ main/modules/food_production/nile_singa_water.csv  |  6398 +--
+ .../food_production/nile_southwest_water.csv       |  6376 +--
+ main/modules/food_production/nile_tana_water.csv   |  2218 +-
+ main/modules/food_production/nile_tsengh_water.csv |  5614 +--
+ .../food_production/nile_victoria_water.csv        |   766 +-
+ .../food_production/nile_water_usage_all.csv       | 49176 +++++++++----------
+ .../modules/food_production/ozentari_1950_2026.csv |   916 +
+ main/modules/food_production/plot_et0.py           |    38 +
+ .../modules/food_production/roseires_1950_2026.csv |   916 +
+ main/modules/food_production/singa_1950_2026.csv   |   916 +
+ .../food_production/southwest_1950_2026.csv        |   916 +
+ main/modules/food_production/tana_1950_2026.csv    |   916 +
+ main/modules/food_production/tsengh_1950_2026.csv  |   916 +
+ .../modules/food_production/victoria_1950_2026.csv |   916 +
+ 78 files changed, 117401 insertions(+), 98681 deletions(-)
+ create mode 100644 electricity_price/electricity_price_estimator.py
+ create mode 100644 electricity_price/electricity_prices.png
+ create mode 100644 electricity_price/nile.yaml
+ create mode 100644 electricity_price/price_csv/aswand.csv
+ create mode 100644 electricity_price/price_csv/cairo.csv
+ create mode 100644 electricity_price/price_csv/gerd.csv
+ create mode 100644 electricity_price/price_csv/karthoum.csv
+ create mode 100644 electricity_price/price_csv/kashm.csv
+ create mode 100644 electricity_price/price_csv/merowe.csv
+ create mode 100644 electricity_price/price_csv/ozentari.csv
+ create mode 100644 electricity_price/price_csv/roseires.csv
+ create mode 100644 electricity_price/price_csv/singa.csv
+ create mode 100644 electricity_price/price_csv/southwest.csv
+ create mode 100644 electricity_price/price_csv/tana.csv
+ create mode 100644 electricity_price/price_csv/tsengh.csv
+ create mode 100644 electricity_price/price_csv/victoria.csv
+ create mode 100644 main/modules/food_production/METHODS.md
+ create mode 100644 main/modules/food_production/aswand_1950_2026.csv
+ create mode 100644 main/modules/food_production/cairo_1950_2026.csv
+ create mode 100644 main/modules/food_production/copernicus_egypt_agriculture.py
+ create mode 100644 main/modules/food_production/gerd_1950_2026.csv
+ create mode 100644 main/modules/food_production/karthoum_1950_2026.csv
+ create mode 100644 main/modules/food_production/kashm_1950_2026.csv
+ create mode 100644 main/modules/food_production/merowe_1950_2026.csv
+ create mode 100644 main/modules/food_production/ozentari_1950_2026.csv
+ create mode 100644 main/modules/food_production/plot_et0.py
+ create mode 100644 main/modules/food_production/roseires_1950_2026.csv
+ create mode 100644 main/modules/food_production/singa_1950_2026.csv
+ create mode 100644 main/modules/food_production/southwest_1950_2026.csv
+ create mode 100644 main/modules/food_production/tana_1950_2026.csv
+ create mode 100644 main/modules/food_production/tsengh_1950_2026.csv
+ create mode 100644 main/modules/food_production/victoria_1950_2026.csv
+Push to origin/main...
+To github.com:EonHermes/rdst.git
+   f24bf2d..343d9b2  main -> main
+Pitch deck already exists. Appending any new insights from design docs...
+Pitch deck found at /home/dl/rdst/pitch_deck/pitch_deck.md. No automatic update performed.
+No changes to pitch deck.
+=== Finished at Sat Apr 25 09:00:08 AM CEST 2026 ===
