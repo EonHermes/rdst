@@ -22,7 +22,7 @@ When Ethiopia fills GERD faster for power generation, the cascade hits downstrea
 ## Solution
 RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hackathon — Space for Water track**. It connects satellite observations to real-world KPIs through a physics-based river simulator:
 
-- **Mass-balance river simulator** with ~18 curated nodes along the main stem, both source branches (Blue & White Nile), the Sudd wetland, major dams (GERD, Roseires, Merowe, Aswan/Nasser), and confluence at Khartoum — runs a full 240-month simulation in **~10 ms**
+- **Dual-engine architecture**: A Python sim engine for rapid prototyping and a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports both monthly time-steps (240 months in ~10 ms) and daily-resolution simulation with configurable reporting frequency
 - **Satellite-to-KPI validation chain**: ERA5 climate reanalysis drives all forcings; Sentinel-2 NDVI validates food KPIs against actual crop health over Gezira and the Delta. Historical baseline spans **75+ years (1950–2026)** via ERA5 legacy datasets
 - **Map-first React dashboard** with animated month scrubber, NDVI satellite overlay, side-by-side compare view, and weighted scoring — policy sliders feel instant because the sim engine runs in milliseconds
 - **Economic impact layer**: Node-level electricity price estimation (13 nodes, 75-year horizon) using ERA5 solar radiation + country retail anchors, with water value conversion to EUR/m³ for direct energy-vs-water trade-off analysis
@@ -34,13 +34,16 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 
 1. **Dataloader** (Python/typer) → fetches ERA5 via CDS API, Sentinel-2 via Copernicus STAC; writes Parquet timeseries + GeoJSON topology + YAML config. Schema-correct stub mode produces 4-node synthetic data in <30s to unblock downstream lanes immediately.
 2. **Canonical Store** (`data/`) → `nodes.geojson` (geometry), `node_config.yaml` (params per node), `timeseries/*.parquet` (monthly forcings for ~18 nodes, 240 months each), `overlays/ndvi/*.parquet` (satellite observations)
-3. **Sim Engine** (Python/numpy/pandas) → directed acyclic river graph with **8 node types**: source, reservoir, reach, confluence, wetland, demand_municipal, demand_irrigation, sink. Topological sweep computes mass balance in **~10 ms per full run**. Includes Penman–Monteith evaporation, Muskingum routing, and FAO AquaStat crop coefficients.
+3. **Sim Engine** — dual-mode:
+   - **Python/numpy/pandas**: rapid prototyping with full node-type coverage (source, reservoir, reach, confluence, wetland, demand_municipal, demand_irrigation, sink), Penman–Monteith evaporation, Muskingum routing, FAO AquaStat crop coefficients
+   - **Rust core (`nrsm`)**: compiled via PyO3/Maturin for production performance. Supports configurable time-steps (monthly or daily), reporting frequency control, and an **optimizer fast-action API** — pass a vector of release actions and get back full simulation results in milliseconds
 4. **Dashboard** (React/Vite/MapLibre GL) → map-first layout: left-rail policy sliders, center animated map with node sizing by storage/flow, right-rail KPI sparklines + score breakdown, bottom scenario tray.
 
 **Hackathon-enabling design:** The hard data contracts between layers mean each team can develop independently — the dataloader's stub output unblocks the sim engine and API in under 30 seconds, so no lane waits on another.
 
 ## Technical Differentiators
 - **Physics-grounded, not black-box**: Penman–Monteith reservoir evaporation, Muskingum reach routing (lag + attenuation), FAO AquaStat crop-water-productivity coefficients — every number traces back to published hydrology. No ML approximations; the physics *is* the model.
+- **Dual-engine architecture (Python + Rust)**: Python/numpy for rapid prototyping and full node-type coverage, with a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports configurable time-steps (monthly or daily), reporting frequency control, and an optimizer fast-action API — pass release actions as a vector and get back simulation results in milliseconds.
 - **Satellite-to-KPI closed loop**: Sentinel-2 NDVI (2015+) + CGLS NDVI (pre-2015) modulates crop-water-productivity coefficients — *the food KPI is validated against what satellites actually saw*. This closes the space-data loop that most basin models leave open.
 - **Water value conversion**: Electricity prices at each dam node converted to water opportunity-cost in EUR/m³ using effective fall heights (GERD: 145 m, Aswan: 111 m, Merowe: 68 m) — enabling direct comparison of energy revenue vs. downstream water impacts.
 - **75-year historical baseline**: ERA5 legacy datasets span 1950–2026, enabling drought/flood trend analysis across multiple decades. Typical basin models are limited to ~20-year reanalysis windows.
@@ -61,7 +64,8 @@ Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +
 **The live demo is where it clicks:** Move any slider (GERD release, Gezira irrigation area, minimum delta flow) and hit Run — watch the cascade propagate through the map in real time. The 10ms sim means you can explore dozens of what-if combinations during a live pitch, letting judges *feel* the trade-offs instead of just hearing about them.
 
 ## Tech Stack
-- **Sim Engine:** Python 3.11, numpy, pandas, pydantic v2 — mass-balance physics with Penman evaporation and Muskingum routing (~10 ms per full run)
+- **Sim Engine (Python):** Python 3.11, numpy, pandas, pydantic v2 — mass-balance physics with Penman evaporation and Muskingum routing (~10 ms per full run)
+- **Sim Engine (Rust):** `nrsm` crate compiled via PyO3/Maturin → `nrsm-py` Python package. Supports configurable time-steps, reporting frequency, and fast-action API for optimizer integration
 - **Dataloader:** Python, cdsapi (ERA5), pystac-client + stackstac (Sentinel-2 via Copernicus STAC), xarray, pyarrow
 - **API:** FastAPI + uvicorn — stateless REST with file-backed JSON scenario store; stub mode for early frontend development
 - **Frontend:** React 18 + Vite + TypeScript + MapLibre GL JS (free OSM basemap) + Plotly.js + Zustand
@@ -80,7 +84,7 @@ Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +
 ## Next Steps
 - **Calibration (immediate):** Tune source catchment scaling + Sudd evaporation fraction until simulated Aswan discharge achieves <20% monthly RMSE against GRDC observed data — the single most important validation step.
 - **NDVI closed-loop:** Sentinel-2 NDVI modulates crop-water-productivity coefficient, closing the satellite-to-KPI validation chain (stretch goal).
-- **Pareto optimizer:** Grid search over GERD release policy space to suggest Pareto-better schedules given user-defined water/food/energy weights.
+- **Pareto optimizer:** Grid search over GERD release policy space to suggest Pareto-better schedules given user-defined water/food/energy weights — now backed by the Rust `nrsm` fast-action API for rapid iteration.
 - **Finer granularity:** Add tributary nodes (Sobat, Bahr el Ghazal) and governorate-level irrigation zones for regional analysis.
 - **Climate scenarios:** Couple with CMIP6 downscaled projections for forward-looking drought/flood planning.
 - **Open-source release:** Publish the full stack as a reusable basin-twin framework — the dataloader + sim engine are generic enough to adapt to any river system.

@@ -32,9 +32,10 @@ When Ethiopia fills GERD faster, the cascade hits downstream: Sudan loses irriga
 
 A physics-based digital twin of the Nile basin — satellite data connected to real-world KPIs:
 
-- **19 nodes** along the main stem: Lake Victoria → Lake Tana → GERD → Roseires → Merowe → Khartoum → Aswan → Delta, plus the Sudd wetland and both source branches.
+- **19 nodes** along the main stem: Lake Victoria → Lake Tana → GERD → Roseires → Merowe → Khartoum → Khartoum → Aswan → Delta, plus the Sudd wetland and both source branches.
 - **75+ years of climate data** (1950–2026) via ERA5 legacy datasets — enables drought/flood trend analysis across decades, not just recent history.
 - **Sentinel-2 NDVI + CGLS** over irrigated zones as the food-KPI validator — *the model's food KPI is validated against what satellites actually saw*.
+- **Dual-engine architecture**: Python/numpy for prototyping + Rust core (`nrsm`) compiled via PyO3/Maturin for production performance. Configurable time-steps (monthly or daily), reporting frequency control, and a fast-action API for optimizer integration.
 - **Three sliders, three KPIs, one score, compare view.** Full 240-month sim runs in ~10 ms.
 
 ---
@@ -65,7 +66,7 @@ All free. All Copernicus. Pipeline writes Parquet on disk — reusable beyond th
 
 ## The physics, one slide
 
-Monthly time step, topological sweep.
+Monthly time step (or daily), topological sweep.
 
 - **Reservoirs**: `storage = prev + inflow − release − evap`, HEP on turbined release only, spill separate.
 - **Reaches**: Muskingum routing (lag + attenuation).
@@ -73,6 +74,8 @@ Monthly time step, topological sweep.
 - **Demands**: FAO monthly crop-water curve × area × productivity → tonnes.
 
 Mass conservation verified to &lt;0.1 % in a golden test. Validated against GRDC Aswan discharge.
+
+**Dual-engine stack:** Python/numpy for rapid prototyping with full node-type coverage, Rust core (`nrsm`) compiled via PyO3/Maturin for production-grade performance.
 
 **Effective fall heights** (from ICOLD register + dam operator data):
 GERD 145 m · Aswan 111 m · Merowe 68 m · Roseires 68 m · Tekeze 185 m
@@ -117,6 +120,8 @@ to find a policy that Pareto-beats the historical baseline:
 
 &gt; "Shift ~300 m³/s of release from Q1 to Q3 → food +4 Mt, energy flat, no
 &gt; delta violation."
+
+Backed by the Rust `nrsm` fast-action API — pass a vector of release actions and get back simulation results in milliseconds, enabling rapid Pareto-front exploration.
 
 *(If the optimizer button is visible, it works. If not, the manual what-if
 still tells the story.)*

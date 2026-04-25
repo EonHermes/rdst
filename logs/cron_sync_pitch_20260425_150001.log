@@ -1,0 +1,162 @@
+=== Starting rdst upstream sync and pitch deck update at Sat Apr 25 03:00:01 PM CEST 2026 ===
+Fetching upstream...
+From github.com:lindestad/rdst
+   53e148a..6e65fd8  main       -> upstream/main
+Checking if we can fast-forward...
+Merging upstream/main into main...
+Merge made by the 'ort' strategy.
+ horizon/data/README.md                             |    33 +-
+ horizon/data/hydmod/catchments.csv                 |    14 +
+ horizon/data/hydmod/daily/aswand.csv               | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/cairo.csv                | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/gerd.csv                 | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/karthoum.csv             | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/kashm.csv                | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/merowe.csv               | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/ozentari.csv             | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/roseires.csv             | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/singa.csv                | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/southwest.csv            | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/tana.csv                 | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/tsengh.csv               | 23378 +++++++++++++++
+ horizon/data/hydmod/daily/victoria.csv             | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/catch_Q_all.txt            | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/catchments.txt             |    14 +
+ .../data/hydmod/raw/climate_stations_lat_lon.txt   |    46 +
+ horizon/data/hydmod/raw/hydro_Aswand.txt           | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Cairo.txt            | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_GERD.txt             | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Karthoum.txt         | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Kashm.txt            | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Merowe.txt           | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Ozentari.txt         | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Roseires.txt         | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Singa.txt            | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_SouthWest.txt        | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Tana.txt             | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Tsengh.txt           | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/hydro_Victoria.txt         | 23378 +++++++++++++++
+ horizon/data/hydmod/raw/tp_all.txt                 |  5481 ++++
+ horizon/data/topology/catalog.csv                  |     1 +
+ horizon/data/topology/edges.csv                    |    33 +-
+ horizon/data/topology/node_config.calib.yaml       |   277 +-
+ horizon/data/topology/node_config.yaml             |   277 +-
+ horizon/data/topology/nodes.csv                    |    34 +-
+ horizon/data/topology/nodes.geojson                |   390 +-
+ horizon/nrsm/README.md                             |    54 +-
+ horizon/nrsm/contracts/scenario.schema.yaml        |    15 +
+ horizon/nrsm/crates/nrsm-cli/src/main.rs           |   127 +-
+ .../crates/nrsm-dataloader/src/horizon_data.rs     |   246 +-
+ horizon/nrsm/crates/nrsm-sim-core/src/lib.rs       |     4 +-
+ horizon/nrsm/crates/nrsm-sim-core/src/model.rs     |    51 +-
+ horizon/nrsm/crates/nrsm-sim-core/src/sim.rs       |    69 +-
+ .../nrsm/docs/dataloader-node-generation-plan.md   |     4 +
+ main/modules/evaporation/METHOD.md                 |   132 +
+ .../evap_csv/aswand_1950_2026_direct.csv           | 28125 +++++++++++++++++++
+ .../evap_csv/cairo_1950_2026_direct.csv            | 28125 +++++++++++++++++++
+ .../evaporation/evap_csv/gerd_1950_2026_direct.csv | 28125 +++++++++++++++++++
+ .../evap_csv/karthoum_1950_2026_direct.csv         | 28125 +++++++++++++++++++
+ .../evap_csv/kashm_1950_2026_direct.csv            | 28125 +++++++++++++++++++
+ .../evap_csv/merowe_1950_2026_direct.csv           | 28125 +++++++++++++++++++
+ .../evap_csv/ozentari_1950_2026_direct.csv         | 28125 +++++++++++++++++++
+ .../evap_csv/roseires_1950_2026_direct.csv         | 28125 +++++++++++++++++++
+ .../evap_csv/singa_1950_2026_direct.csv            | 28125 +++++++++++++++++++
+ .../evap_csv/southwest_1950_2026_direct.csv        | 28125 +++++++++++++++++++
+ .../evaporation/evap_csv/tana_1950_2026_direct.csv | 28125 +++++++++++++++++++
+ .../evap_csv/tsengh_1950_2026_direct.csv           | 28125 +++++++++++++++++++
+ .../evap_csv/victoria_1950_2026_direct.csv         | 28125 +++++++++++++++++++
+ main/modules/evaporation/evaporation.py            |   855 +
+ main/modules/evaporation/lake_extents.png          |   Bin 0 -> 81809 bytes
+ main/modules/evaporation/nodes.yaml                |   159 +
+ main/modules/evaporation/plot_extents.py           |   113 +
+ main/modules/evaporation/plot_lake_data.py         |   232 +
+ .../evaporation/plots/aswand_inspection.png        |   Bin 0 -> 79568 bytes
+ .../modules/evaporation/plots/cairo_inspection.png |   Bin 0 -> 79229 bytes
+ main/modules/evaporation/plots/gerd_inspection.png |   Bin 0 -> 67141 bytes
+ .../evaporation/plots/karthoum_inspection.png      |   Bin 0 -> 73169 bytes
+ .../modules/evaporation/plots/kashm_inspection.png |   Bin 0 -> 63073 bytes
+ .../evaporation/plots/merowe_inspection.png        |   Bin 0 -> 75877 bytes
+ .../evaporation/plots/ozentari_inspection.png      |   Bin 0 -> 65138 bytes
+ .../evaporation/plots/roseires_inspection.png      |   Bin 0 -> 67559 bytes
+ .../modules/evaporation/plots/singa_inspection.png |   Bin 0 -> 70245 bytes
+ .../evaporation/plots/southwest_inspection.png     |   Bin 0 -> 89052 bytes
+ main/modules/evaporation/plots/tana_inspection.png |   Bin 0 -> 70686 bytes
+ .../evaporation/plots/tsengh_inspection.png        |   Bin 0 -> 71534 bytes
+ .../evaporation/plots/victoria_inspection.png      |   Bin 0 -> 80922 bytes
+ ...ession_coefficients_01_probably_very_wrong.json |    54 +
+ ...egression_coefficients_probably_very_wrong.json |    54 +
+ main/node.md                                       |     6 +
+ main/simulator.md                                  |    31 +
+ 82 files changed, 1005044 insertions(+), 593 deletions(-)
+ create mode 100644 horizon/data/hydmod/catchments.csv
+ create mode 100644 horizon/data/hydmod/daily/aswand.csv
+ create mode 100644 horizon/data/hydmod/daily/cairo.csv
+ create mode 100644 horizon/data/hydmod/daily/gerd.csv
+ create mode 100644 horizon/data/hydmod/daily/karthoum.csv
+ create mode 100644 horizon/data/hydmod/daily/kashm.csv
+ create mode 100644 horizon/data/hydmod/daily/merowe.csv
+ create mode 100644 horizon/data/hydmod/daily/ozentari.csv
+ create mode 100644 horizon/data/hydmod/daily/roseires.csv
+ create mode 100644 horizon/data/hydmod/daily/singa.csv
+ create mode 100644 horizon/data/hydmod/daily/southwest.csv
+ create mode 100644 horizon/data/hydmod/daily/tana.csv
+ create mode 100644 horizon/data/hydmod/daily/tsengh.csv
+ create mode 100644 horizon/data/hydmod/daily/victoria.csv
+ create mode 100644 horizon/data/hydmod/raw/catch_Q_all.txt
+ create mode 100644 horizon/data/hydmod/raw/catchments.txt
+ create mode 100644 horizon/data/hydmod/raw/climate_stations_lat_lon.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Aswand.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Cairo.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_GERD.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Karthoum.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Kashm.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Merowe.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Ozentari.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Roseires.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Singa.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_SouthWest.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Tana.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Tsengh.txt
+ create mode 100644 horizon/data/hydmod/raw/hydro_Victoria.txt
+ create mode 100644 horizon/data/hydmod/raw/tp_all.txt
+ create mode 100644 main/modules/evaporation/METHOD.md
+ create mode 100644 main/modules/evaporation/evap_csv/aswand_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/cairo_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/gerd_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/karthoum_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/kashm_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/merowe_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/ozentari_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/roseires_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/singa_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/southwest_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/tana_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/tsengh_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evap_csv/victoria_1950_2026_direct.csv
+ create mode 100644 main/modules/evaporation/evaporation.py
+ create mode 100644 main/modules/evaporation/lake_extents.png
+ create mode 100644 main/modules/evaporation/nodes.yaml
+ create mode 100644 main/modules/evaporation/plot_extents.py
+ create mode 100644 main/modules/evaporation/plot_lake_data.py
+ create mode 100644 main/modules/evaporation/plots/aswand_inspection.png
+ create mode 100644 main/modules/evaporation/plots/cairo_inspection.png
+ create mode 100644 main/modules/evaporation/plots/gerd_inspection.png
+ create mode 100644 main/modules/evaporation/plots/karthoum_inspection.png
+ create mode 100644 main/modules/evaporation/plots/kashm_inspection.png
+ create mode 100644 main/modules/evaporation/plots/merowe_inspection.png
+ create mode 100644 main/modules/evaporation/plots/ozentari_inspection.png
+ create mode 100644 main/modules/evaporation/plots/roseires_inspection.png
+ create mode 100644 main/modules/evaporation/plots/singa_inspection.png
+ create mode 100644 main/modules/evaporation/plots/southwest_inspection.png
+ create mode 100644 main/modules/evaporation/plots/tana_inspection.png
+ create mode 100644 main/modules/evaporation/plots/tsengh_inspection.png
+ create mode 100644 main/modules/evaporation/plots/victoria_inspection.png
+ create mode 100644 main/modules/evaporation/regression_coefficients_01_probably_very_wrong.json
+ create mode 100644 main/modules/evaporation/regression_coefficients_probably_very_wrong.json
+Push to origin/main...
+To github.com:EonHermes/rdst.git
+   22e92d1..623029a  main -> main
+Pitch deck already exists. Appending any new insights from design docs...
+Pitch deck found at /home/dl/rdst/pitch_deck/pitch_deck.md. No automatic update performed.
+No changes to pitch deck.
+=== Finished at Sat Apr 25 03:00:06 PM CEST 2026 ===
