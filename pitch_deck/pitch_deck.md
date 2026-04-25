@@ -3,7 +3,7 @@
 ## Hook
 What if Ethiopia holds back more Blue Nile water for power generation? Watch the cascade from GERD to the Egyptian Delta — in real units, validated against satellite-observed crop NDVI.
 
-**The question every Nile basin decision-maker faces but can't answer:** *If I change this one policy lever, what happens downstream?* RDST gives them an interactive sandbox where the answer appears in seconds — not months of political debate.
+**The question every Nile basin decision-maker faces but can't answer:** *If I change this one policy lever, what happens downstream?* RDST gives them an interactive sandbox where the answer appears in seconds — not months of political debate. And now with a **dedicated pitch experience**, judges and stakeholders get a guided tour through the same model that powers the live dashboard.
 
 ## Problem
 The Nile serves **~500 million people across 11 countries** sharing a single water system — yet no shared tool exists to answer the question that drives every policy decision: *If I change this lever, what happens downstream?*
@@ -12,21 +12,23 @@ Today's basin analysis is fragmented:
 - **Hydrologists** model flow in m³/s but can't translate it into food or energy impacts
 - **Policymakers** debate trade-offs with no sandbox to test scenarios before committing
 - **Satellite data** (Sentinel-2 NDVI, ERA5 climate) sits siloed — never connected back to KPIs that decision-makers understand
+- **Risk assessment** is reactive: flood warnings arrive too late for reservoir operators to adjust releases proactively
 
 When Ethiopia fills GERD faster for power generation, the cascade hits downstream: Sudan's Gezira loses water, Egypt's drinking-water service drops, electricity prices spike in hydro-dependent grids, and environmental-flow constraints at the delta are violated. These cascading effects are **hard to quantify without a model** — and impossible to test without risking real communities.
 
 **The stakes are real:** the GERD filling controversy has already caused diplomatic friction between Ethiopia, Sudan, and Egypt. A shared sandbox where all three parties can explore trade-offs in common units could de-escalate rhetoric into data-driven negotiation.
 
-**Beyond diplomacy — disaster preparedness:** The same basin model ingests GloFAS flood forecasts to simulate how upstream reservoir releases amplify or dampen downstream flooding, turning reactive crisis response into proactive risk management.
+**Beyond diplomacy — disaster preparedness:** The same basin model ingests GloFAS flood forecasts to simulate how upstream reservoir releases amplify or dampen downstream flooding, turning reactive crisis response into proactive risk management. New **risk analysis modules** quantify flood probability under different release strategies.
 
 ## Solution
 RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hackathon — Space for Water track**. It connects satellite observations to real-world KPIs through a physics-based river simulator:
 
-- **Dual-engine architecture**: A Python sim engine for rapid prototyping and a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports both monthly time-steps (240 months in ~10 ms) and daily-resolution simulation with configurable reporting frequency
+- **Dual-engine architecture**: A Python sim engine for rapid prototyping and a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports both monthly time-steps (240 months in ~10 ms) and daily-resolution simulation with configurable reporting frequency, plus a fast-action API for optimizer integration
 - **Satellite-to-KPI validation chain**: ERA5 climate reanalysis drives all forcings; Sentinel-2 NDVI validates food KPIs against actual crop health over Gezira and the Delta. Historical baseline spans **75+ years (1950–2026)** via ERA5 legacy datasets
 - **Map-first React dashboard** with animated month scrubber, NDVI satellite overlay, side-by-side compare view, and weighted scoring — policy sliders feel instant because the sim engine runs in milliseconds
+- **Dedicated pitch experience**: A purpose-built `nile-visualizer-app` with guided PitchPage walkthrough, TeamPage for introductions, and a BasinMap component that renders the full Nile basin with risk overlays
 - **Economic impact layer**: Node-level electricity price estimation (13 nodes, 75-year horizon) using ERA5 solar radiation + country retail anchors, with water value conversion to EUR/m³ for direct energy-vs-water trade-off analysis
-- **Flood forecasting integration**: GloFAS hydrological forecasts feed into the basin model to simulate how upstream reservoir releases amplify or dampen downstream flooding
+- **Flood forecasting integration**: GloFAS hydrological forecasts feed into the basin model to simulate how upstream reservoir releases amplify or dampen downstream flooding. New **risk analysis modules** quantify flood probability under different release strategies
 - **Production-grade data architecture**: Structured `horizon/data/` tree with domain-specific subdirectories and immutable Parquet contracts — stub mode produces schema-correct synthetic data in <30 seconds, unblocking all development lanes immediately
 
 ## Architecture
@@ -36,10 +38,11 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 2. **Canonical Store** (`data/`) → `nodes.geojson` (geometry), `node_config.yaml` (params per node), `timeseries/*.parquet` (monthly forcings for ~18 nodes, 240 months each), `overlays/ndvi/*.parquet` (satellite observations)
 3. **Sim Engine** — dual-mode:
    - **Python/numpy/pandas**: rapid prototyping with full node-type coverage (source, reservoir, reach, confluence, wetland, demand_municipal, demand_irrigation, sink), Penman–Monteith evaporation, Muskingum routing, FAO AquaStat crop coefficients
-   - **Rust core (`nrsm`)**: compiled via PyO3/Maturin for production performance. Supports configurable time-steps (monthly or daily), reporting frequency control, and an **optimizer fast-action API** — pass a vector of release actions and get back full simulation results in milliseconds
-4. **Dashboard** (React/Vite/MapLibre GL) → map-first layout: left-rail policy sliders, center animated map with node sizing by storage/flow, right-rail KPI sparklines + score breakdown, bottom scenario tray.
+   - **Rust core (`nrsm`)**: compiled via PyO3/Maturin for production performance. Supports configurable time-steps (monthly or daily), reporting frequency control, and an **optimizer fast-action API** — pass a vector of release actions and get back full simulation results in milliseconds. New plotting module visualizes water balance outputs.
+4. **Dashboard** (React/Vite/MapLibre GL) → map-first layout: left-rail policy sliders, center animated map with node sizing by storage/flow, right-rail KPI sparklines + score breakdown, bottom scenario tray
+5. **Pitch App** (`nile-visualizer-app`) → purpose-built React app with guided PitchPage walkthrough, TeamPage for introductions, BasinMap component with risk overlays, and river path calculations for visual clarity.
 
-**Hackathon-enabling design:** The hard data contracts between layers mean each team can develop independently — the dataloader's stub output unblocks the sim engine and API in under 30 seconds, so no lane waits on another.
+**Hackathon-enabling design:** The hard data contracts between layers mean each team can develop independently — the dataloader's stub output unblocks the sim engine and API in under 30 seconds, so no lane waits on another. A formal **SIMULATOR_OUTPUT_CONTRACT.md** documents the exact shape of simulation results for downstream consumers.
 
 ## Technical Differentiators
 - **Physics-grounded, not black-box**: Penman–Monteith reservoir evaporation, Muskingum reach routing (lag + attenuation), FAO AquaStat crop-water-productivity coefficients — every number traces back to published hydrology. No ML approximations; the physics *is* the model.
@@ -50,7 +53,9 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Fast enough for interactivity**: One full 240-month simulation run ≈ **10 ms** — sliders feel instant, not batch jobs. Explore dozens of what-if combinations during a live pitch.
 - **Mass conservation verified to <0.1%**: Golden test ensures total inflow = outflow + evaporation + storage change over any period. Wrong mass balance poisons every demo number — this guard prevents silent regressions.
 - **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction.
-- **Flood forecasting integration**: GloFAS global flood forecasts feed into the basin model to simulate cascade effects of upstream reservoir releases on downstream flooding — bridging policy simulation with disaster preparedness.
+- **Flood forecasting integration**: GloFAS global flood forecasts feed into the basin model to simulate cascade effects of upstream reservoir releases on downstream flooding — bridging policy simulation with disaster preparedness. New **risk analysis modules** quantify flood probability under different release strategies.
+- **Formal output contracts**: `SIMULATOR_OUTPUT_CONTRACT.md` documents the exact shape of simulation results, enabling reliable downstream consumption by both the dashboard and external tools.
+- **CI/CD pipeline**: GitHub Actions workflow for automated deployment of the nile-visualizer-app — from commit to live demo in one step.
 
 ## Demo Flow
 Three canned scenarios walk through the full story in ~3 minutes:
@@ -62,6 +67,8 @@ Three canned scenarios walk through the full story in ~3 minutes:
 Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +6 TWh`). Toggle NDVI overlay to see satellite-validated crop health over Gezira and the Delta.
 
 **The live demo is where it clicks:** Move any slider (GERD release, Gezira irrigation area, minimum delta flow) and hit Run — watch the cascade propagate through the map in real time. The 10ms sim means you can explore dozens of what-if combinations during a live pitch, letting judges *feel* the trade-offs instead of just hearing about them.
+
+**Pitch experience:** For presentations without full dashboard access, the `nile-visualizer-app` provides a guided PitchPage walkthrough with pre-built scenario comparisons, team introductions on the TeamPage, and BasinMap visualizations with river path overlays — all deployable as a standalone web app via CI/CD.
 
 ## Tech Stack
 - **Sim Engine (Python):** Python 3.11, numpy, pandas, pydantic v2 — mass-balance physics with Penman evaporation and Muskingum routing (~10 ms per full run)
@@ -87,6 +94,7 @@ Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +
 - **Pareto optimizer:** Grid search over GERD release policy space to suggest Pareto-better schedules given user-defined water/food/energy weights — now backed by the Rust `nrsm` fast-action API for rapid iteration.
 - **Finer granularity:** Add tributary nodes (Sobat, Bahr el Ghazal) and governorate-level irrigation zones for regional analysis.
 - **Climate scenarios:** Couple with CMIP6 downscaled projections for forward-looking drought/flood planning.
+- **Risk module expansion:** Extend GloFAS integration to quantify flood probability distributions under different reservoir release strategies — turning point forecasts into probabilistic risk assessments.
 - **Open-source release:** Publish the full stack as a reusable basin-twin framework — the dataloader + sim engine are generic enough to adapt to any river system.
 
 ## Current Status
