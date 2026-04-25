@@ -91,9 +91,13 @@ Per-node columns:
 | `routing_loss` | `release_for_routing - downstream_release`, useful for plotting reach losses. |
 | `energy_value` | Hydropower value for the period in EUR. |
 
-`summary.csv` uses the same period columns and aggregates the water, food, and
-energy fields across all nodes, including total generated electricity. Calendar
-dates are not emitted yet; consumers should treat `start_day` and
+`summary.csv` uses the same period columns and aggregates the water, food,
+storage, and energy fields across all nodes, including total generated
+electricity and period-end `terminal_reservoir_storage`. The JSON summary also
+includes `initial_reservoir_storage`, `terminal_reservoir_storage`, and
+`minimum_reservoir_storage` for the whole run, which are useful for optimizers
+that should not win short-term energy by draining the system. Calendar dates
+are not emitted yet; consumers should treat `start_day` and
 `end_day_exclusive` as offsets from the scenario start date used by the data
 assembler.
 
@@ -308,6 +312,21 @@ uv run nrsm-optimize `
   --generations 30 `
   --population-size 48
 ```
+
+Compare the selected optimizer policy with simple baselines:
+
+```powershell
+uv run nrsm-benchmark `
+  --period ..\scenarios\nile-mvp\past\2005-q1-90d-baseline.yaml `
+  --data-dir ..\..\data `
+  --generated-dir ..\data\generated\benchmark-2005-q1 `
+  --optimized-actions runs\2005-q1-pareto\actions `
+  --output-dir runs\benchmarks\2005-q1
+```
+
+The benchmark writes standard per-policy result folders under
+`policies/<policy>/results` so comparison plots can stay in the external
+plotting package.
 
 ## Assemble Canonical Data
 
