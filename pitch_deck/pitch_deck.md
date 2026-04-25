@@ -17,12 +17,16 @@ Decision-makers need a transparent sandbox to explore what-if scenarios on KPIs 
 
 **The stakes are real:** the GERD filling controversy has already caused diplomatic friction between Ethiopia, Sudan, and Egypt. A model that lets all three parties *see* the trade-offs in shared units could de-escalate rhetoric into data-driven negotiation.
 
+**Beyond diplomacy — disaster preparedness:** The same basin model can ingest GloFAS flood forecasts to simulate how upstream reservoir releases amplify or dampen downstream flooding, turning reactive crisis response into proactive risk management.
+
 ## Solution
 RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hackathon — Space for Water track**. It combines:
 - A **mass-balance river simulator** with ~18 curated nodes along the main stem, both source branches (Blue & White Nile), the Sudd wetland, major dams (GERD, Roseires, Merowe, Aswan/Nasser), and confluence at Khartoum
-- **Real-world data**: ERA5 climate reanalysis (2005–2024) drives all forcings; Sentinel-2 NDVI validates food KPIs against actual crop health over Gezira and the Delta
+- **Real-world data**: ERA5 climate reanalysis drives all forcings; Sentinel-2 NDVI validates food KPIs against actual crop health over Gezira and the Delta. Historical baseline spans **75+ years (1950–2026)** via ERA5 legacy datasets, enabling climate trend analysis far beyond typical 20-year windows
 - A **map-first React dashboard** with animated month scrubber, NDVI satellite overlay, side-by-side compare view, and weighted scoring
 - **Economic impact layer**: Node-level electricity price estimation (13 nodes, 75-year horizon) using ERA5 solar radiation + country retail anchors — shows downstream economic consequences of water policy decisions
+- **Flood forecasting integration**: GloFAS hydrological forecasts feed into the basin model to simulate how upstream reservoir releases amplify or dampen downstream flooding — turning reactive crisis response into proactive risk management
+- **Structured multi-domain data architecture**: All datasets organized in a unified `horizon/data/` tree with domain-specific subdirectories (topology, climate, hydrology, agriculture, electricity pricing) — production-grade data governance from day one
 - **Hard data contracts**: The dataloader's Parquet output is an immutable schema — stub mode produces 4-node synthetic data in <30 seconds, unblocking all downstream development lanes immediately
 
 ## Architecture
@@ -40,6 +44,9 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction. Calibration report generated automatically.
 - **Space-data closed loop**: Sentinel-2 NDVI (2015+) + CGLS NDVI (pre-2015) modulates the crop-water-productivity coefficient, closing the satellite-to-KPI validation chain — *the model's food KPI is validated against what satellites actually saw*
 - **Economic impact estimation**: 13 Nile-basin nodes with daily electricity price modeling (75-year horizon) using ERA5 solar radiation + country retail anchors. Hydro nodes use cosine seasonal models aligned to the Nile flow cycle; solar nodes split daytime/nighttime pricing by sunshine duration. Shows downstream economic consequences of water policy decisions.
+- **Extended historical baseline**: 75+ years of climate data (1950–2026) via ERA5 legacy datasets — enables drought/flood trend analysis across multiple decades, not just the recent past. Typical basin models are limited to ~20-year reanalysis windows.
+- **Flood forecasting integration**: GloFAS global flood forecasts feed into the basin model to simulate cascade effects of upstream reservoir releases on downstream flooding — a capability that bridges policy simulation with disaster preparedness.
+- **Structured multi-domain data architecture**: All datasets organized in `horizon/data/` with domain-specific subdirectories (topology, climate, hydrology/glofas, agriculture/water_usage+ndvi, electricity_price) — production-grade data governance from day one.
 - **Hard data contracts**: The dataloader's Parquet output is the immutable contract between L1 and everything downstream. Schema-correct stubs unblock all lanes in <30 seconds.
 - **Fast enough for interactivity**: One full 240-month simulation run ≈ **10 ms** — sliders feel instant, not batch jobs.
 - **Mass conservation verified to <0.1%**: A golden test ensures total inflow = outflow + evaporation + storage change over any period. Wrong mass balance poisons every demo number — this guard prevents silent regressions.
@@ -89,5 +96,6 @@ MVP-scale prototype built during the CASSINI Hackathon:
 - 🔄 Real ERA5 fetch + Sentinel-2 NDVI pipeline in progress (stub mode fully functional)
 - 🔄 Calibration against GRDC discharge — target <20% monthly RMSE
 - ✅ Electricity price estimation module: 13 nodes, 75-year horizon, ERA5 solar-driven pricing models per generation source type
+- ✅ **Extended data infrastructure**: Consolidated `horizon/data/` with topology, climate (ERA5 daily/monthly/legacy), hydrology (GloFAS), agriculture (water usage + NDVI), and electricity price datasets — 1M+ rows across 6 domains
 - ⏳ Pareto optimizer and NDVI-modulated food KPI as stretch goals
 
