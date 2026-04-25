@@ -5,6 +5,8 @@ What if Ethiopia holds back more Blue Nile water for power generation? Watch the
 
 **The question every Nile basin decision-maker faces but can't answer:** *If I change this one policy lever, what happens downstream?* RDST gives them an interactive sandbox where the answer appears in seconds — not months of political debate. And now with a **dedicated pitch experience**, judges and stakeholders get a guided tour through the same model that powers the live dashboard.
 
+**The hook that lands:** Slide a GERD release parameter and watch 20 years of cascading impacts unfold across 18 nodes in milliseconds — from Ethiopian hydropower to Egyptian drinking water, all grounded in real satellite data.
+
 ## Problem
 The Nile serves **~500 million people across 11 countries** sharing a single water system — yet no shared tool exists to answer the question that drives every policy decision: *If I change this lever, what happens downstream?*
 
@@ -13,12 +15,15 @@ Today's basin analysis is fragmented:
 - **Policymakers** debate trade-offs with no sandbox to test scenarios before committing
 - **Satellite data** (Sentinel-2 NDVI, ERA5 climate) sits siloed — never connected back to KPIs that decision-makers understand
 - **Risk assessment** is reactive: flood warnings arrive too late for reservoir operators to adjust releases proactively
+- **Historical precedent is ignored**: The 1963 September flood at Aswan (one of the largest on record, ~17,000 m³/s) shows what happens when upstream decisions cascade unmanaged — but we lack a tool to simulate *how* different reservoir strategies would have changed that outcome
 
 When Ethiopia fills GERD faster for power generation, the cascade hits downstream: Sudan's Gezira loses water, Egypt's drinking-water service drops, electricity prices spike in hydro-dependent grids, and environmental-flow constraints at the delta are violated. These cascading effects are **hard to quantify without a model** — and impossible to test without risking real communities.
 
 **The stakes are real:** the GERD filling controversy has already caused diplomatic friction between Ethiopia, Sudan, and Egypt. A shared sandbox where all three parties can explore trade-offs in common units could de-escalate rhetoric into data-driven negotiation.
 
 **Beyond diplomacy — disaster preparedness:** The same basin model ingests GloFAS flood forecasts to simulate how upstream reservoir releases amplify or dampen downstream flooding, turning reactive crisis response into proactive risk management. New **risk analysis modules** quantify flood probability under different release strategies.
+
+**The gap in current tools:** Existing models are either too coarse (country-level water budgets) or too narrow (single-reservoir operations). RDST bridges the gap with a full-basin node graph — 18 nodes from Lake Victoria to the Mediterranean Delta, each with physics-based mass balance.
 
 ## Solution
 RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hackathon — Space for Water track**. It connects satellite observations to real-world KPIs through a physics-based river simulator:
@@ -30,6 +35,8 @@ RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hac
 - **Economic impact layer**: Node-level electricity price estimation (13 nodes, 75-year horizon) using ERA5 solar radiation + country retail anchors, with water value conversion to EUR/m³ for direct energy-vs-water trade-off analysis
 - **Flood forecasting integration**: GloFAS hydrological forecasts feed into the basin model to simulate how upstream reservoir releases amplify or dampen downstream flooding. New **risk analysis modules** quantify flood probability under different release strategies
 - **Production-grade data architecture**: Structured `horizon/data/` tree with domain-specific subdirectories and immutable Parquet contracts — stub mode produces schema-correct synthetic data in <30 seconds, unblocking all development lanes immediately
+- **Nile MVP Scenario Catalog**: A curated library of 25+ pre-built scenarios spanning historical events (1963 September flood, 2005 baseline, 2010 dry season) and future projections (2027–2100: energy transition, demand growth, climate stress), each with full YAML configuration for reproducible simulation
+- **Direct evaporation data**: Per-node direct evaporation CSVs for all major nodes (Aswan, Cairo, GERD, Merowe, Roseires, Lake Victoria, Lake Tana) — replacing Penman-only estimates with observed data for improved calibration accuracy
 
 ## Architecture
 Four layers with hard interfaces — each layer has a well-defined contract so teams can work in parallel:
@@ -41,6 +48,7 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
    - **Rust core (`nrsm`)**: compiled via PyO3/Maturin for production performance. Supports configurable time-steps (monthly or daily), reporting frequency control, and an **optimizer fast-action API** — pass a vector of release actions and get back full simulation results in milliseconds. New plotting module visualizes water balance outputs.
 4. **Dashboard** (React/Vite/MapLibre GL) → map-first layout: left-rail policy sliders, center animated map with node sizing by storage/flow, right-rail KPI sparklines + score breakdown, bottom scenario tray
 5. **Pitch App** (`nile-visualizer-app`) → purpose-built React app with guided PitchPage walkthrough, TeamPage for introductions, BasinMap component with risk overlays, and river path calculations for visual clarity.
+6. **Scenario Catalog** (`horizon/nrsm/scenarios/nile-mvp/`) → 25+ pre-configured scenarios organized by era (past/future) and scope (few-nodes/full-basin), each a self-contained YAML with full policy, period, and node configuration for reproducible simulation.
 
 **Hackathon-enabling design:** The hard data contracts between layers mean each team can develop independently — the dataloader's stub output unblocks the sim engine and API in under 30 seconds, so no lane waits on another. A formal **SIMULATOR_OUTPUT_CONTRACT.md** documents the exact shape of simulation results for downstream consumers.
 
@@ -56,6 +64,8 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Flood forecasting integration**: GloFAS global flood forecasts feed into the basin model to simulate cascade effects of upstream reservoir releases on downstream flooding — bridging policy simulation with disaster preparedness. New **risk analysis modules** quantify flood probability under different release strategies.
 - **Formal output contracts**: `SIMULATOR_OUTPUT_CONTRACT.md` documents the exact shape of simulation results, enabling reliable downstream consumption by both the dashboard and external tools.
 - **CI/CD pipeline**: GitHub Actions workflow for automated deployment of the nile-visualizer-app — from commit to live demo in one step.
+- **Curated scenario catalog (25+ scenarios)**: Pre-built simulations spanning historical events (1963 September flood, 2005 baseline, 2010 dry season) and future projections (2027–2100: energy transition, demand growth, climate stress). Each scenario is a self-contained YAML — reproducible, shareable, and instantly runnable.
+- **Direct evaporation data**: Per-node observed evaporation CSVs for all major nodes replace Penman-only estimates, improving calibration accuracy and model credibility.
 
 ## Demo Flow
 Three canned scenarios walk through the full story in ~3 minutes:
@@ -63,6 +73,8 @@ Three canned scenarios walk through the full story in ~3 minutes:
 1. **Baseline** (historical policy) → Score 72/100. Map shows 240 months of flows; KPI sparklines for water (~94% served), food (~12 Mt/yr), energy (~38 TWh/year) animate with the month scrubber. Toggle NDVI overlay — watch satellite-observed crop health pulse over Gezira and the Delta.
 2. **GERD Fast-Fill** (aggressive filling 2020–2023, release pinned to 500 m³/s) → Energy spikes upstream but downstream food drops ~2.3 Mt/yr, Egypt water service down ~4%, delta-flow violations appear in summer months, and node-level electricity prices shift across the basin. Score drops to ~64.
 3. **Drought 2010** (tightened constraints + reduced irrigation demand over 2009–2012) → Score collapses; the twin shows *which* downstream users break first — Gezira before Cairo, revealing the cascade order in real time.
+
+**Bonus demo from scenario catalog:** Load the **September 1963 flood scenario** (one of the largest recorded floods at Aswan, ~17,000 m³/s) to show how different reservoir strategies would have changed the cascade — a powerful demonstration of historical counterfactual analysis.
 
 Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +6 TWh`). Toggle NDVI overlay to see satellite-validated crop health over Gezira and the Delta.
 
@@ -72,11 +84,12 @@ Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +
 
 ## Tech Stack
 - **Sim Engine (Python):** Python 3.11, numpy, pandas, pydantic v2 — mass-balance physics with Penman evaporation and Muskingum routing (~10 ms per full run)
-- **Sim Engine (Rust):** `nrsm` crate compiled via PyO3/Maturin → `nrsm-py` Python package. Supports configurable time-steps, reporting frequency, and fast-action API for optimizer integration
+- **Sim Engine (Rust):** `nrsm` crate compiled via PyO3/Maturin → `nrsm-py` Python package. Supports configurable time-steps, reporting frequency, fast-action API for optimizer integration, and a plotting module for water balance visualization
 - **Dataloader:** Python, cdsapi (ERA5), pystac-client + stackstac (Sentinel-2 via Copernicus STAC), xarray, pyarrow
 - **API:** FastAPI + uvicorn — stateless REST with file-backed JSON scenario store; stub mode for early frontend development
 - **Frontend:** React 18 + Vite + TypeScript + MapLibre GL JS (free OSM basemap) + Plotly.js + Zustand
-- **Data formats:** Parquet (column-oriented timeseries), GeoJSON (node topology), YAML (per-node config), JSON (scenario persistence)
+- **Data formats:** Parquet (column-oriented timeseries), GeoJSON (node topology), YAML (per-node config and scenario definitions), JSON (scenario persistence)
+- **Scenario catalog:** 25+ pre-built scenarios in `horizon/nrsm/scenarios/nile-mvp/` — organized by era (past/future) and scope, each a self-contained YAML with full policy configuration
 - **DevOps:** Docker Compose, GitHub Actions — `docker compose up` produces a working app in <5 min
 - **Testing:** pytest with golden-file mass-balance test, fixture-based schema validation, integration tests per API endpoint
 
@@ -95,6 +108,7 @@ Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +
 - **Finer granularity:** Add tributary nodes (Sobat, Bahr el Ghazal) and governorate-level irrigation zones for regional analysis.
 - **Climate scenarios:** Couple with CMIP6 downscaled projections for forward-looking drought/flood planning.
 - **Risk module expansion:** Extend GloFAS integration to quantify flood probability distributions under different reservoir release strategies — turning point forecasts into probabilistic risk assessments.
+- **Scenario catalog expansion:** Add more historical events (1984 drought, 2020 full-year balanced) and future projections (energy transition pathways, demand growth scenarios through 2100).
 - **Open-source release:** Publish the full stack as a reusable basin-twin framework — the dataloader + sim engine are generic enough to adapt to any river system.
 
 ## Current Status
