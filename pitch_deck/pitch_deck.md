@@ -84,7 +84,7 @@ Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +
 
 ## Tech Stack
 - **Sim Engine (Python):** Python 3.11, numpy, pandas, pydantic v2 — mass-balance physics with Penman evaporation and Muskingum routing (~10 ms per full run)
-- **Sim Engine (Rust):** `nrsm` crate compiled via PyO3/Maturin → `nrsm-py` Python package. Supports configurable time-steps, reporting frequency, fast-action API for optimizer integration, and a plotting module for water balance visualization
+- **Sim Engine (Rust):** `nrsm` crate compiled via PyO3/Maturin → `nrsm-py` Python package. Configurable time-steps (monthly or daily), reporting frequency control, fast-action API for optimizer integration, NRSM comparison plots, and a plotting module for water balance visualization.
 - **Dataloader:** Python, cdsapi (ERA5), pystac-client + stackstac (Sentinel-2 via Copernicus STAC), xarray, pyarrow
 - **API:** FastAPI + uvicorn — stateless REST with file-backed JSON scenario store; stub mode for early frontend development
 - **Frontend:** React 18 + Vite + TypeScript + MapLibre GL JS (free OSM basemap) + Plotly.js + Zustand
@@ -104,7 +104,8 @@ Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +
 ## Next Steps
 - **Calibration (immediate):** Tune source catchment scaling + Sudd evaporation fraction until simulated Aswan discharge achieves <20% monthly RMSE against GRDC observed data — the single most important validation step.
 - **NDVI closed-loop:** Sentinel-2 NDVI modulates crop-water-productivity coefficient, closing the satellite-to-KPI validation chain (stretch goal).
-- **Pareto optimizer:** Grid search over GERD release policy space to suggest Pareto-better schedules given user-defined water/food/energy weights — now backed by the Rust `nrsm` fast-action API for rapid iteration.
+- **NSGA-II Pareto optimizer:** Multi-objective evolutionary search over compressed piecewise-constant release schedules. Three compromise modes let you choose what matters: `energy_food` (prefer hydropower + service reliability), `balanced` (keep energy, food, spill, storage visible), or `storage_safe` (favor ending with more water in reservoirs). The full Pareto frontier is written so humans can pick a different policy afterwards.
+- **Benchmark policies:** Built-in baselines (`full_production`, `no_production`, `constant_50`, `inflow_proxy`, `storage_guardrail`) let you compare any simple rule against the optimizer's output with one command. Benchmark results feed directly into the plotting module for side-by-side comparison figures.
 - **Finer granularity:** Add tributary nodes (Sobat, Bahr el Ghazal) and governorate-level irrigation zones for regional analysis.
 - **Climate scenarios:** Couple with CMIP6 downscaled projections for forward-looking drought/flood planning.
 - **Risk module expansion:** Extend GloFAS integration to quantify flood probability distributions under different reservoir release strategies — turning point forecasts into probabilistic risk assessments.
@@ -119,5 +120,6 @@ MVP-scale prototype built during the CASSINI Hackathon:
 - ✅ Electricity price estimation and water value conversion across 13 dam nodes — physically grounded via `E = η · ρ · g · h`
 - ✅ Extended data infrastructure: 1M+ rows across 7 domains in consolidated `horizon/data/` tree
 - 🔄 Calibration against GRDC discharge (target <20% monthly RMSE at Aswan)
-- ⏳ Pareto optimizer and NDVI-modulated food KPI as stretch goals
+- ✅ NSGA-II Pareto optimizer with 3 compromise modes + benchmark policies
+- ⏳ NDVI-modulated food KPI (Sentinel-2 modulates crop-water-productivity coefficient)
 
