@@ -15,6 +15,7 @@ RDST is a compact digital-twin prototype for exploring water-policy tradeoffs ac
 | Visualizer | `nile-visualizer-app` | Vite + React app for inspecting simulator output. |
 | Static prototype | `nile-visualizer-plan` | Lightweight HTML/CSS/JS visual plan. |
 | Design docs | `docs/superpowers` | Architecture, lane plans, and hackathon scope. |
+| Python digital twin draft | `horizon/nile-digital-twin` | Earlier Python/FastAPI/React prototype moved out of the repository root. |
 
 ## Project Shape
 
@@ -26,6 +27,7 @@ RDST
 |   |-- crates/nrsm-dataloader Standalone sourced-data generator
 |   |-- contracts/             Scenario schema
 |   `-- scenarios/nile-mvp/    Demo Nile scenario
+|-- horizon/nile-digital-twin/ Python/FastAPI/React draft prototype
 |-- nile-visualizer-app/       React dashboard
 |-- nile-visualizer-plan/      Static visual prototype
 `-- docs/superpowers/          Design notes and implementation plans

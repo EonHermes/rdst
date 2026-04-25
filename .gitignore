@@ -6,6 +6,7 @@ herss/
 !.env.example
 horizon/nrsm/data/
 !horizon/nrsm/data/.gitkeep
+horizon/nile-digital-twin/data/
 
 # Rust
 target/
@@ -37,6 +38,8 @@ site/
 
 # Node and frontend tooling
 node_modules/
+.vite/
+tsconfig.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
