@@ -9,11 +9,11 @@ The Nile serves **~500 million people across 11 countries** sharing a single wat
 - Policy debates happen in m³/s while headlines scream about "water wars"
 - Ethiopia needs hydropower (GERD — 6,450 MW nameplate, Africa's largest dam)
 - Sudan depends on reliable irrigation (Gezira scheme — 900,000 ha of cotton and wheat)
-- Egypt requires water security for **20M+ people** in the Cairo metro area alone
+- Egypt requires water security for **100M+ people** across the entire basin
 
-When Ethiopia fills GERD faster for power generation, the cascade hits downstream: Sudan's Gezira loses water, Egypt's drinking-water service drops, and environmental-flow constraints at the delta are violated. These cascading effects are **hard to quantify without a model** — and impossible to test without risking real communities.
+When Ethiopia fills GERD faster for power generation, the cascade hits downstream: Sudan's Gezira loses water, Egypt's drinking-water service drops, electricity prices spike in hydro-dependent grids, and environmental-flow constraints at the delta are violated. These cascading effects are **hard to quantify without a model** — and impossible to test without risking real communities.
 
-Decision-makers need a transparent sandbox to explore what-if scenarios on three KPIs computed in real units: **drinking-water reliability (% population served)**, **food production (tonnes/yr)**, and **hydropower output (GWh/yr)** — validated against satellite-observed crop NDVI, before committing to irreversible policy.
+Decision-makers need a transparent sandbox to explore what-if scenarios on KPIs computed in real units: **drinking-water reliability (% population served)**, **food production (tonnes/yr)**, **hydropower output (GWh/yr)** — validated against satellite-observed crop NDVI, with downstream economic impact estimated via node-level electricity price modeling. This lets all three parties *see* the trade-offs in shared units before committing to irreversible policy.
 
 **The stakes are real:** the GERD filling controversy has already caused diplomatic friction between Ethiopia, Sudan, and Egypt. A model that lets all three parties *see* the trade-offs in shared units could de-escalate rhetoric into data-driven negotiation.
 
@@ -22,6 +22,7 @@ RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hac
 - A **mass-balance river simulator** with ~18 curated nodes along the main stem, both source branches (Blue & White Nile), the Sudd wetland, major dams (GERD, Roseires, Merowe, Aswan/Nasser), and confluence at Khartoum
 - **Real-world data**: ERA5 climate reanalysis (2005–2024) drives all forcings; Sentinel-2 NDVI validates food KPIs against actual crop health over Gezira and the Delta
 - A **map-first React dashboard** with animated month scrubber, NDVI satellite overlay, side-by-side compare view, and weighted scoring
+- **Economic impact layer**: Node-level electricity price estimation (13 nodes, 75-year horizon) using ERA5 solar radiation + country retail anchors — shows downstream economic consequences of water policy decisions
 - **Hard data contracts**: The dataloader's Parquet output is an immutable schema — stub mode produces 4-node synthetic data in <30 seconds, unblocking all downstream development lanes immediately
 
 ## Architecture
@@ -38,6 +39,7 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Physics-grounded, not black-box**: Penman–Monteith reservoir evaporation, Muskingum reach routing (lag + attenuation), FAO AquaStat crop-water-productivity coefficients — every number traces back to published hydrology. No ML approximations; the physics *is* the model.
 - **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction. Calibration report generated automatically.
 - **Space-data closed loop**: Sentinel-2 NDVI (2015+) + CGLS NDVI (pre-2015) modulates the crop-water-productivity coefficient, closing the satellite-to-KPI validation chain — *the model's food KPI is validated against what satellites actually saw*
+- **Economic impact estimation**: 13 Nile-basin nodes with daily electricity price modeling (75-year horizon) using ERA5 solar radiation + country retail anchors. Hydro nodes use cosine seasonal models aligned to the Nile flow cycle; solar nodes split daytime/nighttime pricing by sunshine duration. Shows downstream economic consequences of water policy decisions.
 - **Hard data contracts**: The dataloader's Parquet output is the immutable contract between L1 and everything downstream. Schema-correct stubs unblock all lanes in <30 seconds.
 - **Fast enough for interactivity**: One full 240-month simulation run ≈ **10 ms** — sliders feel instant, not batch jobs.
 - **Mass conservation verified to <0.1%**: A golden test ensures total inflow = outflow + evaporation + storage change over any period. Wrong mass balance poisons every demo number — this guard prevents silent regressions.
@@ -45,8 +47,8 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 ## Demo Flow
 Three canned scenarios walk through the full story in ~3 minutes:
 
-1. **Baseline** (historical policy) → Score 72/100. Map shows 240 months of flows; KPI sparklines for water (~94% served), food (~12 Mt/month), energy (~38 TWh/year) animate with the month scrubber. Toggle NDVI overlay — watch satellite-observed crop health pulse over Gezira and the Delta.
-2. **GERD Fast-Fill** (aggressive filling 2020–2023, release pinned to 500 m³/s) → Energy spikes upstream but downstream food drops ~2.3 Mt/month, Egypt water service down ~4%, delta-flow violations appear in summer months. Score drops to ~64.
+1. **Baseline** (historical policy) → Score 72/100. Map shows 240 months of flows; KPI sparklines for water (~94% served), food (~12 Mt/yr), energy (~38 TWh/year) animate with the month scrubber. Toggle NDVI overlay — watch satellite-observed crop health pulse over Gezira and the Delta.
+2. **GERD Fast-Fill** (aggressive filling 2020–2023, release pinned to 500 m³/s) → Energy spikes upstream but downstream food drops ~2.3 Mt/yr, Egypt water service down ~4%, delta-flow violations appear in summer months, and node-level electricity prices shift across the basin. Score drops to ~64.
 3. **Drought 2010** (tightened constraints + reduced irrigation demand over 2009–2012) → Score collapses; the twin shows *which* downstream users break first — Gezira before Cairo, revealing the cascade order in real time.
 
 Compare view: side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +6 TWh`). Toggle NDVI overlay to see satellite-validated crop health over Gezira and the Delta.
@@ -86,5 +88,6 @@ MVP-scale prototype built during the CASSINI Hackathon:
 - ✅ Three canned demo scenarios ready for pitch rehearsal (baseline, GERD fast-fill, drought 2010)
 - 🔄 Real ERA5 fetch + Sentinel-2 NDVI pipeline in progress (stub mode fully functional)
 - 🔄 Calibration against GRDC discharge — target <20% monthly RMSE
+- ✅ Electricity price estimation module: 13 nodes, 75-year horizon, ERA5 solar-driven pricing models per generation source type
 - ⏳ Pareto optimizer and NDVI-modulated food KPI as stretch goals
 
