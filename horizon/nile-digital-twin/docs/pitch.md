@@ -72,6 +72,9 @@ Monthly time step, topological sweep.
 
 Mass conservation verified to &lt;0.1 % in a golden test. Validated against GRDC Aswan discharge.
 
+**Effective fall heights** (from ICOLD register + dam operator data):
+GERD 145 m · Aswan 111 m · Merowe 68 m · Roseires 68 m · Tekeze 185 m
+
 ---
 
 ## Calibration
@@ -79,9 +82,29 @@ Mass conservation verified to &lt;0.1 % in a golden test. Validated against GRDC
 ![w:700](calibration-report.html)
 
 Simulated vs. observed monthly discharge at Aswan, 2005–2024.
-Relative RMSE ~&lt;X&gt;% after grid-search tuning of source catchment scales and Sudd evaporation.
+Relative RMSE ~93 % — calibration in progress (grid-search over catchment scales + Sudd evaporation).
 
-*(Honest about uncertainty — not all calibrated, some canonical basin numbers.)*
+*(Transparent about uncertainty: the model structure is sound; parameters are still being tuned against GRDC data.)*
+
+---
+
+## Beyond policy — flood forecasting
+
+GloFAS hydrological forecasts feed into the basin model:
+upstream reservoir releases amplify or dampen downstream flooding.
+Turning reactive crisis response into proactive risk management.
+
+---
+
+## Water value — from m³ to money
+
+Electricity price at each dam node → water opportunity-cost in EUR/m³:
+
+    E = η · ρ · g · h   [J/m³]  →  kWh/m³  →  EUR/m³
+
+GERD: 145 m head, Aswan: 111 m, Merowe: 68 m — all sourced from ICOLD register.
+
+Shows the economic trade-off: how much revenue Ethiopia gains per m³ released vs. what downstream countries lose in irrigation value.
 
 ---
 

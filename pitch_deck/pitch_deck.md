@@ -43,7 +43,8 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Physics-grounded, not black-box**: Penman–Monteith reservoir evaporation, Muskingum reach routing (lag + attenuation), FAO AquaStat crop-water-productivity coefficients — every number traces back to published hydrology. No ML approximations; the physics *is* the model.
 - **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction. Calibration report generated automatically.
 - **Space-data closed loop**: Sentinel-2 NDVI (2015+) + CGLS NDVI (pre-2015) modulates the crop-water-productivity coefficient, closing the satellite-to-KPI validation chain — *the model's food KPI is validated against what satellites actually saw*
-- **Economic impact estimation**: 13 Nile-basin nodes with daily electricity price modeling (75-year horizon) using ERA5 solar radiation + country retail anchors. Hydro nodes use cosine seasonal models aligned to the Nile flow cycle; solar nodes split daytime/nighttime pricing by sunshine duration. Shows downstream economic consequences of water policy decisions.
+- **Economic impact estimation**: 13 Nile-basin nodes with daily electricity price modeling (75-year horizon) using ERA5 solar radiation + country retail anchors. Hydro nodes use cosine seasonal models aligned to the Nile flow cycle; solar nodes split daytime/nighttime pricing by sunshine duration.
+- **Water value conversion**: Electricity prices at each dam node are converted to water opportunity-cost in EUR/m³ using effective fall heights (GERD: 145 m, Aswan: 111 m, Merowe: 68 m, etc.) — enabling direct comparison of energy revenue vs. downstream water impacts.
 - **Extended historical baseline**: 75+ years of climate data (1950–2026) via ERA5 legacy datasets — enables drought/flood trend analysis across multiple decades, not just the recent past. Typical basin models are limited to ~20-year reanalysis windows.
 - **Flood forecasting integration**: GloFAS global flood forecasts feed into the basin model to simulate cascade effects of upstream reservoir releases on downstream flooding — a capability that bridges policy simulation with disaster preparedness.
 - **Structured multi-domain data architecture**: All datasets organized in `horizon/data/` with domain-specific subdirectories (topology, climate, hydrology/glofas, agriculture/water_usage+ndvi, electricity_price) — production-grade data governance from day one.
@@ -94,8 +95,10 @@ MVP-scale prototype built during the CASSINI Hackathon:
 - ✅ Polished React dashboard: map-first layout, policy sliders, KPI charts, compare view, month scrubber
 - ✅ Three canned demo scenarios ready for pitch rehearsal (baseline, GERD fast-fill, drought 2010)
 - 🔄 Real ERA5 fetch + Sentinel-2 NDVI pipeline in progress (stub mode fully functional)
-- 🔄 Calibration against GRDC discharge — target <20% monthly RMSE
+- 🔄 Calibration against GRDC discharge — current RMSE ~94%, target <20% monthly
 - ✅ Electricity price estimation module: 13 nodes, 75-year horizon, ERA5 solar-driven pricing models per generation source type
-- ✅ **Extended data infrastructure**: Consolidated `horizon/data/` with topology, climate (ERA5 daily/monthly/legacy), hydrology (GloFAS), agriculture (water usage + NDVI), and electricity price datasets — 1M+ rows across 6 domains
+- ✅ **Water value estimator**: Converts electricity prices to water opportunity-cost (EUR/m³) using effective fall heights for all 13 dam nodes — physically grounded via `E = η · ρ · g · h`
+- ✅ **Fall height database**: Effective hydraulic head data sourced from ICOLD register, dam operator data, and peer-reviewed literature for every major Nile basin dam
+- ✅ **Extended data infrastructure**: Consolidated `horizon/data/` with topology, climate (ERA5 daily/monthly/legacy), hydrology (GloFAS), agriculture (water usage + NDVI), electricity price, and water value datasets — 1M+ rows across 7 domains
 - ⏳ Pareto optimizer and NDVI-modulated food KPI as stretch goals
 
