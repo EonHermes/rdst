@@ -16,12 +16,14 @@ Existing basin analysis is trapped between two extremes:
 
 When Ethiopia fills GERD faster for power generation, the cascade hits downstream: Sudan's Gezira loses water, Egypt's drinking-water service drops, electricity prices spike in hydro-dependent grids, and environmental-flow constraints at the delta are violated. These cascading effects are **hard to quantify without a model** — and impossible to test without risking real communities.
 
-**The stakes are real:** the GERD filling controversy has already caused diplomatic friction between Ethiopia, Sudan, and Egypt. A shared sandbox where all three parties can explore trade-offs in common units could de-escalate rhetoric into data-driven negotiation.
+**The stakes are existential:** the GERD filling controversy has already caused diplomatic friction between Ethiopia, Sudan, and Egypt — three nations whose water security is interdependent but uncoordinated. A shared sandbox where all parties can explore trade-offs in common units could de-escalate rhetoric into data-driven negotiation. But more importantly, it gives every decision-maker a way to *see* the consequences of their choices before they're locked in.
 
 **Extreme stress testing is built-in:** RDST includes curated extreme scenarios — from the 1963 September flood (~17,000 m³/s at Aswan) to multi-year drought projections through 2100. A new upstream holdback stress scenario (90-day complete flow stoppage) lets users quantify worst-case cascade impacts on downstream populations and agriculture.
 
 ## Solution
 RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hackathon — Space for Water track**. It connects satellite observations to real-world KPIs through a physics-based river simulator:
+
+**The value proposition:** Move any slider, see cascading consequences in milliseconds. No black-box ML approximations — every number traces back to published hydrology, validated against real satellite data.
 
 - **Dual-engine architecture**: A Python sim engine for rapid prototyping and a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports monthly time-steps (240 months in ~10 ms) with configurable reporting frequency, plus a fast-action API for optimizer integration
 - **Satellite-to-KPI validation chain**: ERA5 climate reanalysis drives all forcings; Sentinel-2 NDVI validates food KPIs against actual crop health over Gezira and the Delta. Historical baseline spans **~20 years (2005–2024)** via ERA5 reanalysis
@@ -53,34 +55,46 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 **Hackathon-enabling design:** The hard data contracts between layers mean each team can develop independently — the dataloader's stub output unblocks the sim engine and API in under 30 seconds, so no lane waits on another. A formal **SIMULATOR_OUTPUT_CONTRACT.md** documents the exact shape of simulation results for downstream consumers.
 
 ## Technical Differentiators
-- **Physics-grounded, not black-box**: Penman–Monteith reservoir evaporation, Muskingum reach routing (lag + attenuation), FAO AquaStat crop-water-productivity coefficients — every number traces back to published hydrology. No ML approximations; the physics *is* the model.
-- **8-node taxonomy covering full basin dynamics**: `source` (headwater boundary with catchment scaling) → `reservoir` (storage + Penman evap + Hep energy calc) → `reach` (Muskingum routing with K/x parameters) → `confluence` (pure flow summation) → `wetland` (Sudd-style loss fraction) → `demand_municipal` (population × per-capita pull) → `demand_irrigation` (FAO seasonal crop water reqs) → `sink` (environmental-flow constraint). Each node type has a well-defined mass-balance equation.
-- **Policy levers that map to real decisions**: Per-reservoir release schedules (`historical` | `rule_curve` | `manual` monthly m³/s), per-demand area/population scale factors, global minimum delta flow target (scoring penalty if violated), and adjustable scoring weights `(w_water, w_food, w_energy)` normalized to sum to 1. These are the exact levers that Nile basin negotiators debate.
-- **Dual-engine architecture (Python + Rust)**: Python/numpy for rapid prototyping and full node-type coverage, with a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports configurable time-steps (monthly or daily), reporting frequency control, and an optimizer fast-action API — pass release actions as a vector and get back simulation results in milliseconds.
-- **Satellite-to-KPI closed loop**: Sentinel-2 NDVI (2015+) + CGLS NDVI (pre-2015) modulates crop-water-productivity coefficients — *the food KPI is validated against what satellites actually saw*. This closes the space-data loop that most basin models leave open.
-- **Water value conversion**: Electricity prices at each dam node converted to water opportunity-cost in EUR/m³ using effective fall heights (GERD: 145 m, Aswan: 111 m, Merowe: 68 m) — enabling direct comparison of energy revenue vs. downstream water impacts.
-- **NSGA-II Pareto optimizer**: Multi-objective evolutionary search over compressed piecewise-constant release schedules. Three compromise modes let you choose what matters: `energy_food` (prefer hydropower + service reliability), `balanced` (keep energy, food, spill, storage visible), or `storage_safe` (favor ending with more water in reservoirs). The full Pareto frontier is written so humans can pick a different policy afterwards.
-- **Benchmark policies**: Built-in baselines (`full_production`, `no_production`, `constant_50`, `inflow_proxy`, `storage_guardrail`) let you compare any simple rule against the optimizer's output with one command. Benchmark results feed directly into the plotting module for side-by-side comparison figures.
-- **Mass conservation verified to <0.1%**: Golden test ensures total inflow = outflow + evaporation + storage change over any period. Wrong mass balance poisons every demo number — this guard prevents silent regressions.
-- **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction.
-- **Formal output contracts**: `SIMULATOR_OUTPUT_CONTRACT.md` documents the exact shape of simulation results, enabling reliable downstream consumption by both the dashboard and external tools.
+
+### Physics-grounded modeling (no black boxes)
+- **Penman–Monteith evaporation**, Muskingum reach routing (lag + attenuation), FAO AquaStat crop coefficients — every number traces back to published hydrology. No ML approximations; the physics *is* the model.
+- **8-node taxonomy** covering full basin dynamics: `source` → `reservoir` → `reach` → `confluence` → `wetland` → `demand_municipal` → `demand_irrigation` → `sink`. Each has a well-defined mass-balance equation.
+- **Mass conservation verified to <0.1%** — wrong mass balance poisons every demo number; this golden test prevents silent regressions.
+
+### Satellite-to-KPI validation (space data that matters)
+- **Sentinel-2 NDVI** (2015+) + CGLS NDVI (pre-2015) modulates crop-water-productivity coefficients — *the food KPI is validated against what satellites actually saw*. This closes the space-data loop most basin models leave open.
+- **Direct evaporation data**: Per-node observed evaporation CSVs for all major nodes replace Penman-only estimates, improving calibration accuracy.
+
+### Optimization & benchmarking (beyond simulation)
+- **NSGA-II Pareto optimizer**: Multi-objective evolutionary search over compressed piecewise-constant release schedules. Three compromise modes: `energy_food`, `balanced`, or `storage_safe`. The full Pareto frontier is written so humans can pick a different policy afterwards.
+- **Benchmark policies** (`full_production`, `no_production`, `constant_50`, `inflow_proxy`, `storage_guardrail`) let you compare any simple rule against the optimizer's output with one command. Benchmark results feed directly into NRSM comparison plots for side-by-side figures.
+
+### Production-grade infrastructure
+- **Dual-engine architecture**: Python/numpy for rapid prototyping + Rust-native core (`nrsm`) compiled via PyO3/Maturin for production performance. Configurable time-steps (monthly or daily), reporting frequency control, and an optimizer fast-action API.
+- **Formal output contracts** (`SIMULATOR_OUTPUT_CONTRACT.md`): Documents the exact shape of simulation results for reliable downstream consumption by both the dashboard and external tools.
+- **Provenance tracking**: Every simulation result carries a provenance badge — tracks which scenario, parameters, and engine version produced each output.
 - **CI/CD pipeline**: GitHub Actions workflow for automated deployment of the nile-visualizer-app — from commit to live demo in one step.
-- **Provenance tracking**: Every simulation result carries a provenance badge — the visualizer app tracks which scenario, parameters, and engine version produced each output, ensuring reproducibility and auditability.
-- **Direct evaporation data**: Per-node observed evaporation CSVs for all major nodes replace Penman-only estimates, improving calibration accuracy and model credibility.
-- **Risk assessment library**: Built-in risk scoring module evaluates scenario outcomes against environmental-flow constraints, storage safety thresholds, and demand-satisfaction targets — producing quantified risk profiles per node.
+
+### Domain-specific features (Nile expertise)
+- **Water value conversion**: Electricity prices at each dam node converted to water opportunity-cost in EUR/m³ using effective fall heights (GERD: 145 m, Aswan: 111 m, Merowe: 68 m) — enabling direct energy-vs-water trade-off analysis.
+- **Risk assessment library**: Built-in risk scoring evaluates scenario outcomes against environmental-flow constraints, storage safety thresholds, and demand-satisfaction targets — producing quantified risk profiles per node.
+- **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction.
 
 ## Demo Flow
 **Dashboard layout (map-first):** Left rail = policy sliders (GERD release, Gezira irrigation area, min delta flow, scoring weights). Center = animated MapLibre map with node radius ∝ `√(storage)` and reach stroke width ∝ monthly flow. Right rail = KPI sparklines + score breakdown. Bottom tray = saved scenarios. Month scrubber animates the full 240-month period.
 
-The demo walks through **30+ pre-built scenarios** organized into a progressive story — each building on the last:
+The demo follows a **three-act narrative** — each act builds on the last, taking judges from "this is credible" to "this changes how I think about water policy":
 
-1. **"What does normal look like?"** → Load the **Baseline** scenario (historical policy). Score 72/100. Map shows 240 months of flows; KPI sparklines for water (~94% served), food (~12 Mt/yr), energy (~38 TWh/year) animate with the month scrubber. Toggle NDVI overlay — watch satellite-observed crop health pulse over Gezira and the Delta. *This establishes credibility: the model reproduces reality.*
+### Act 1: Credibility ("This model reproduces reality")
+The demo opens with the **Baseline** scenario loaded. The map shows 240 months of flows across all 18 nodes; KPI sparklines for water (~94% served), food (~12 Mt/yr), energy (~38 TWh/year) animate with the month scrubber. Toggle NDVI overlay — watch satellite-observed crop health pulse over Gezira and the Delta. *This establishes credibility: the model reproduces reality, validated against Sentinel-2.*
 
-2. **"What happens when one country changes policy?"** → Load **GERD Fast-Fill** (aggressive filling 2020–2023, release pinned to 500 m³/s). Energy spikes upstream but downstream food drops ~2.3 Mt/yr, Egypt water service down ~4%, delta-flow violations appear in summer months, and node-level electricity prices shift across the basin. Score drops to ~64. *This is the "aha" moment: one slider move reveals cascading consequences.*
+### Act 2: The "Aha" Moment ("One slider reveals everything")
+Load **GERD Fast-Fill** — aggressive filling 2020–2023, release pinned to 500 m³/s. Energy spikes upstream but downstream food drops ~2.3 Mt/yr, Egypt water service down ~4%, delta-flow violations appear in summer months, and node-level electricity prices shift across the basin. Score drops from 72 to ~64. *This is the "aha" moment: one slider move reveals cascading consequences across three nations.*
 
-3. **"Who breaks first under stress?"** → Load **Drought 2010** (tightened constraints + reduced irrigation demand over 2009–2012). Score collapses; the twin shows *which* downstream users break first — Gezira before Cairo, revealing the cascade order in real time. *This demonstrates predictive power: not just "something breaks" but exactly where and when.*
+### Act 3: Predictive Power ("Not just what happened — who breaks first")
+Load **Drought 2010** — tightened constraints + reduced irrigation demand over 2009–2012. Score collapses; the twin shows *which* downstream users break first — Gezira before Cairo, revealing the cascade order in real time. *This demonstrates predictive power: not just "something breaks" but exactly where and when.*
 
-**Compare view:** Side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +6 TWh`). Toggle NDVI overlay to see satellite-validated crop health over Gezira and the Delta.
+**Compare view:** Side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +6 TWh`). Toggle NDVI overlay to see satellite-validated crop health over Gezira and the Delta. *This is where judges start asking their own questions — "What if we tried X?"*
 
 **Bonus — extreme stress test:** Load the **Upstream Holdback 90-day** scenario (complete flow stoppage from Blue Nile headwaters for 3 months) to demonstrate worst-case downstream impacts. Watch as GERD storage drains, Roseires and Merowe face critical shortages, and Gezira irrigation collapses within weeks.
 
@@ -105,12 +119,12 @@ The demo walks through **30+ pre-built scenarios** organized into a progressive 
 - **Scenario-driven storytelling:** The visualizer app's scenario catalog spans **30+ pre-built scenarios** across past events (1963 flood, 2005 baseline, 2010 drought, 2012 wet season, 2015 low storage), future projections (2027 operations check through 2100 long-range), and extreme stress tests (90-day upstream holdback) — each with pre-computed per-node CSV results for instant visualization.
 
 ## Team Fit
-- **5-person team** built this over a single hackathon weekend — **~60 person-hours after sleep/food**, yet shipped a working full-stack application with physics-based simulation, geospatial data pipeline, and interactive dashboard
+- **5-person team** built this over a single hackathon weekend — **~60 person-hours after sleep/food**, yet shipped a working full-stack application with physics-based simulation, geospatial data pipeline, and interactive dashboard. This is the kind of velocity that comes from hard contracts between layers: no lane blocked on another.
 - Strong systems programming background (Rust architecture + Python implementation)
 - Geospatial data experience: Sentinel-2 via Copernicus STAC, ERA5 reanalysis, NDVI processing
 - Full-stack development: Python backend (FastAPI), React frontend with MapLibre GL
 - Water resources domain knowledge: Nile basin hydrology, FAO AquaStat crop coefficients
-- **Hackathon-tested architecture:** Hard data contracts between layers enabled parallel development — no lane blocked on another. Stub mode meant the dashboard could start rendering against fixtures before real data was fetched.
+- **Hackathon-tested architecture:** Hard data contracts between layers enabled parallel development — the dataloader's stub output unblocked all downstream lanes in under 30 seconds.
 
 ## Next Steps
 - **Calibration (immediate):** Tune source catchment scaling + Sudd evaporation fraction until simulated Aswan discharge achieves <20% monthly RMSE against GRDC observed data — the single most important validation step.
