@@ -30,6 +30,11 @@ RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hac
 - **Nile MVP Scenario Catalog**: A curated library of pre-built scenarios spanning historical events (1963 September flood, 2005 baseline, 2010 dry season) and future projections (2027–2100: energy transition, demand growth, climate stress), each with full YAML configuration for reproducible simulation
 - **Direct evaporation data**: Per-node direct evaporation CSVs for all major nodes (Aswan, Cairo, GERD, Merowe, Roseires, Lake Victoria, Lake Tana) — replacing Penman-only estimates with observed data for improved calibration accuracy
 
+**Three real-world KPIs computed in verifiable units:**
+- **Drinking-water reliability**: `% population served` per municipal node (Cairo, Khartoum), aggregated via population-weighted mean. Formula: `min(1, delivered / (population × 200 L/day × days))`
+- **Food production**: `tonnes wheat-equiv/year` from irrigation zones (Gezira cotton/wheat rotation, Egypt-ag rice/maize/wheat). Formula: `Σ(delivered_m³ × FAO AquaStat crop_water_productivity_kg/m³) / 1000`
+- **Hydropower output**: `GWh/month` per dam node. Formula: `release_m³ × head_m × efficiency × ρ × g / 3.6e12` (ρ=1000, g=9.81)
+
 ## Architecture
 Four layers with hard interfaces — each layer has a well-defined contract so teams can work in parallel:
 
@@ -46,6 +51,8 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 
 ## Technical Differentiators
 - **Physics-grounded, not black-box**: Penman–Monteith reservoir evaporation, Muskingum reach routing (lag + attenuation), FAO AquaStat crop-water-productivity coefficients — every number traces back to published hydrology. No ML approximations; the physics *is* the model.
+- **8-node taxonomy covering full basin dynamics**: `source` (headwater boundary with catchment scaling) → `reservoir` (storage + Penman evap + Hep energy calc) → `reach` (Muskingum routing with K/x parameters) → `confluence` (pure flow summation) → `wetland` (Sudd-style loss fraction) → `demand_municipal` (population × per-capita pull) → `demand_irrigation` (FAO seasonal crop water reqs) → `sink` (environmental-flow constraint). Each node type has a well-defined mass-balance equation.
+- **Policy levers that map to real decisions**: Per-reservoir release schedules (`historical` | `rule_curve` | `manual` monthly m³/s), per-demand area/population scale factors, global minimum delta flow target (scoring penalty if violated), and adjustable scoring weights `(w_water, w_food, w_energy)` normalized to sum to 1. These are the exact levers that Nile basin negotiators debate.
 - **Dual-engine architecture (Python + Rust)**: Python/numpy for rapid prototyping and full node-type coverage, with a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports configurable time-steps (monthly or daily), reporting frequency control, and an optimizer fast-action API — pass release actions as a vector and get back simulation results in milliseconds.
 - **Satellite-to-KPI closed loop**: Sentinel-2 NDVI (2015+) + CGLS NDVI (pre-2015) modulates crop-water-productivity coefficients — *the food KPI is validated against what satellites actually saw*. This closes the space-data loop that most basin models leave open.
 - **Water value conversion**: Electricity prices at each dam node converted to water opportunity-cost in EUR/m³ using effective fall heights (GERD: 145 m, Aswan: 111 m, Merowe: 68 m) — enabling direct comparison of energy revenue vs. downstream water impacts.
@@ -57,6 +64,8 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Direct evaporation data**: Per-node observed evaporation CSVs for all major nodes replace Penman-only estimates, improving calibration accuracy and model credibility.
 
 ## Demo Flow
+**Dashboard layout (map-first):** Left rail = policy sliders (GERD release, Gezira irrigation area, min delta flow, scoring weights). Center = animated MapLibre map with node radius ∝ `√(storage)` and reach stroke width ∝ monthly flow. Right rail = KPI sparklines + score breakdown. Bottom tray = saved scenarios. Month scrubber animates the full 240-month period.
+
 Three scenarios walk through a progressive story — each building on the last:
 
 1. **"What does normal look like?"** → Load the **Baseline** scenario (historical policy). Score 72/100. Map shows 240 months of flows; KPI sparklines for water (~94% served), food (~12 Mt/yr), energy (~38 TWh/year) animate with the month scrubber. Toggle NDVI overlay — watch satellite-observed crop health pulse over Gezira and the Delta. *This establishes credibility: the model reproduces reality.*
@@ -70,6 +79,8 @@ Three scenarios walk through a progressive story — each building on the last:
 **Bonus — historical counterfactual:** Load the **September 1963 flood scenario** (one of the largest recorded floods at Aswan, ~17,000 m³/s) to show how different reservoir strategies would have changed the cascade.
 
 **The live demo is where it clicks:** Move any slider (GERD release, Gezira irrigation area, minimum delta flow) and hit Run — watch the cascade propagate through the map in real time. The 10ms sim means you can explore dozens of what-if combinations during a live pitch, letting judges *feel* the trade-offs instead of just hearing about them.
+
+**Map styling details that sell it:** Node fill color encodes served fraction (red→green for demand nodes) or release intensity (blue scale for reservoirs). Reach line stroke width scales with monthly flow — users literally *see* the cascade thin out as they reduce upstream releases. NDVI overlay tiles animate in sync with the month scrubber, showing satellite-observed crop health pulsing over Gezira and the Delta.
 
 **Pitch experience:** For presentations without full dashboard access, the `nile-visualizer-app` provides a guided PitchPage walkthrough with pre-built scenario comparisons, team introductions on the TeamPage, and BasinMap visualizations with river path overlays — all deployable as a standalone web app via CI/CD.
 
