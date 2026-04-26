@@ -18,6 +18,8 @@ When Ethiopia fills GERD faster for power generation, the cascade hits downstrea
 
 **The stakes are real:** the GERD filling controversy has already caused diplomatic friction between Ethiopia, Sudan, and Egypt. A shared sandbox where all three parties can explore trade-offs in common units could de-escalate rhetoric into data-driven negotiation.
 
+**Extreme stress testing is built-in:** RDST includes curated extreme scenarios — from the 1963 September flood (~17,000 m³/s at Aswan) to multi-year drought projections through 2100. A new upstream holdback stress scenario (90-day complete flow stoppage) lets users quantify worst-case cascade impacts on downstream populations and agriculture.
+
 ## Solution
 RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hackathon — Space for Water track**. It connects satellite observations to real-world KPIs through a physics-based river simulator:
 
@@ -27,8 +29,9 @@ RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hac
 - **Dedicated pitch experience**: A purpose-built `nile-visualizer-app` with guided PitchPage walkthrough, TeamPage for introductions, and a BasinMap component that renders the full Nile basin with risk overlays
 - **Economic impact layer**: Node-level electricity price estimation (13 nodes) using ERA5 solar radiation + country retail anchors, with water value conversion to EUR/m³ for direct energy-vs-water trade-off analysis
 - **Production-grade data architecture**: Structured `horizon/data/` tree with domain-specific subdirectories and immutable Parquet contracts — stub mode produces schema-correct synthetic data in <30 seconds, unblocking all development lanes immediately
-- **Nile MVP Scenario Catalog**: A curated library of pre-built scenarios spanning historical events (1963 September flood, 2005 baseline, 2010 dry season) and future projections (2027–2100: energy transition, demand growth, climate stress), each with full YAML configuration for reproducible simulation
+- **Nile MVP Scenario Catalog**: A curated library of pre-built scenarios spanning historical events (1963 September flood, 2005 baseline, 2010 dry season) and future projections (2027–2100: energy transition, demand growth, climate stress), each with full YAML configuration for reproducible simulation. Results are pre-computed and available as CSV per-node timeseries for instant visualization.
 - **Direct evaporation data**: Per-node direct evaporation CSVs for all major nodes (Aswan, Cairo, GERD, Merowe, Roseires, Lake Victoria, Lake Tana) — replacing Penman-only estimates with observed data for improved calibration accuracy
+- **NRSM comparison plots**: Built-in visualization module generates publication-quality PDF/PNG charts comparing action strategies across reservoir operations, storage risk profiles, tradeoff surfaces, and summary statistics — directly from the Rust engine
 
 **Three real-world KPIs computed in verifiable units:**
 - **Drinking-water reliability**: `% population served` per municipal node (Cairo, Khartoum), aggregated via population-weighted mean. Formula: `min(1, delivered / (population × 200 L/day × days))`
@@ -61,7 +64,9 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction.
 - **Formal output contracts**: `SIMULATOR_OUTPUT_CONTRACT.md` documents the exact shape of simulation results, enabling reliable downstream consumption by both the dashboard and external tools.
 - **CI/CD pipeline**: GitHub Actions workflow for automated deployment of the nile-visualizer-app — from commit to live demo in one step.
+- **Provenance tracking**: Every simulation result carries a provenance badge — the visualizer app tracks which scenario, parameters, and engine version produced each output, ensuring reproducibility and auditability.
 - **Direct evaporation data**: Per-node observed evaporation CSVs for all major nodes replace Penman-only estimates, improving calibration accuracy and model credibility.
+- **Risk assessment library**: Built-in risk scoring module evaluates scenario outcomes against environmental-flow constraints, storage safety thresholds, and demand-satisfaction targets — producing quantified risk profiles per node.
 
 ## Demo Flow
 **Dashboard layout (map-first):** Left rail = policy sliders (GERD release, Gezira irrigation area, min delta flow, scoring weights). Center = animated MapLibre map with node radius ∝ `√(storage)` and reach stroke width ∝ monthly flow. Right rail = KPI sparklines + score breakdown. Bottom tray = saved scenarios. Month scrubber animates the full 240-month period.
@@ -76,6 +81,8 @@ Three scenarios walk through a progressive story — each building on the last:
 
 **Compare view:** Side-by-side maps with KPI diff chips (`Food −2.3 Mt`, `Energy +6 TWh`). Toggle NDVI overlay to see satellite-validated crop health over Gezira and the Delta.
 
+**Bonus — extreme stress test:** Load the **Upstream Holdback 90-day** scenario (complete flow stoppage from Blue Nile headwaters for 3 months) to demonstrate worst-case downstream impacts. Watch as GERD storage drains, Roseires and Merowe face critical shortages, and Gezira irrigation collapses within weeks.
+
 **Bonus — historical counterfactual:** Load the **September 1963 flood scenario** (one of the largest recorded floods at Aswan, ~17,000 m³/s) to show how different reservoir strategies would have changed the cascade.
 
 **The live demo is where it clicks:** Move any slider (GERD release, Gezira irrigation area, minimum delta flow) and hit Run — watch the cascade propagate through the map in real time. The 10ms sim means you can explore dozens of what-if combinations during a live pitch, letting judges *feel* the trade-offs instead of just hearing about them.
@@ -86,13 +93,15 @@ Three scenarios walk through a progressive story — each building on the last:
 
 ## Tech Stack
 - **Sim Engine (Python):** Python 3.11, numpy, pandas, pydantic v2 — mass-balance physics with Penman evaporation and Muskingum routing (~10 ms per full run)
-- **Sim Engine (Rust):** `nrsm` crate compiled via PyO3/Maturin → `nrsm-py` Python package. Configurable time-steps (monthly or daily), reporting frequency control, fast-action API for optimizer integration, NRSM comparison plots, and a plotting module for water balance visualization
+- **Sim Engine (Rust):** `nrsm` crate compiled via PyO3/Maturin → `nrsm-py` Python package. Configurable time-steps (monthly or daily), reporting frequency control, fast-action API for optimizer integration, built-in comparison plotting module (reservoir operations, storage risk, tradeoff surfaces), and water balance visualization
 - **Dataloader:** Python, cdsapi (ERA5), pystac-client + stackstac (Sentinel-2 via Copernicus STAC), xarray, pyarrow
 - **API:** FastAPI + uvicorn — stateless REST with file-backed JSON scenario store; stub mode for early frontend development
-- **Frontend:** React 18 + Vite + TypeScript + MapLibre GL JS (free OSM basemap) + Plotly.js + Zustand
+- **Frontend:** React 18 + Vite + TypeScript + MapLibre GL JS (free OSM basemap) + Plotly.js + Zustand — with dedicated pitch experience app featuring scenario catalog browser, provenance tracking, river-path map layout engine, and risk assessment overlays
 - **Data formats:** Parquet (column-oriented timeseries), GeoJSON (node topology), YAML (per-node config and scenario definitions), JSON (scenario persistence)
 - **DevOps:** Docker Compose, GitHub Actions — `docker compose up` produces a working app in <5 min
 - **Testing:** pytest with golden-file mass-balance test, fixture-based schema validation, integration tests per API endpoint
+
+- **Scenario-driven storytelling:** The visualizer app's scenario catalog lets presenters jump between historical events (1963 flood), current conditions (2005 baseline), extreme stress tests (upstream holdback), and future projections (2040 energy transition, 2075 emergency) — each with pre-computed results for instant demo.
 
 ## Team Fit
 - **5-person team** built this over a single hackathon weekend — **~60 person-hours after sleep/food**, yet shipped a working full-stack application with physics-based simulation, geospatial data pipeline, and interactive dashboard
@@ -109,15 +118,17 @@ Three scenarios walk through a progressive story — each building on the last:
 - **Benchmark policies:** Built-in baselines (`full_production`, `no_production`, `constant_50`, `inflow_proxy`, `storage_guardrail`) let you compare any simple rule against the optimizer's output with one command. Benchmark results feed directly into the plotting module for side-by-side comparison figures.
 - **Finer granularity:** Add tributary nodes (Sobat, Bahr el Ghazal) and governorate-level irrigation zones for regional analysis.
 - **Climate scenarios:** Couple with CMIP6 downscaled projections for forward-looking drought/flood planning.
-- **Scenario catalog expansion:** Add more historical events (1984 drought, 2020 full-year balanced) and future projections (energy transition pathways, demand growth scenarios through 2100).
+- **Scenario catalog expansion:** The catalog now spans past events (1963 flood, 2005 baseline, 2010 drought, 2012 wet season, 2015 low storage, 2018 energy prices, 2020 balanced year, 2024 hot summer), future projections (2027 operations check, 2030 flood pulse, 2030 growth, 2035 two-year dry, 2040 energy transition, 2045 demand growth, 2050 five-year stress, 2060 hot low-inflow, 2075 emergency, 2100 long-range), and extreme scenarios (90-day upstream holdback). Each scenario includes pre-computed per-node CSV results for instant visualization.
 - **Open-source release:** Publish the full stack as a reusable basin-twin framework — the dataloader + sim engine are generic enough to adapt to any river system.
 
 ## Current Status
 MVP-scale prototype built during the CASSINI Hackathon:
 - ✅ Full simulation pipeline: stub data end-to-end in <30s, real ERA5 + Sentinel-2 fetch in progress
 - ✅ Polished React dashboard with map-first layout, policy sliders, KPI charts, compare view, month scrubber
-- ✅ Three canned demo scenarios ready for pitch rehearsal (baseline, GERD fast-fill, drought 2010)
+- ✅ Dedicated pitch experience app (`nile-visualizer-app`) with scenario catalog browser, provenance tracking, and risk overlays
+- ✅ 30+ pre-built scenarios across past events, current conditions, extreme stress tests, and future projections — all with pre-computed results
 - ✅ Electricity price estimation and water value conversion across 13 dam nodes — physically grounded via `E = η · ρ · g · h`
+- ✅ NRSM comparison plots: publication-quality charts for reservoir operations, storage risk, tradeoff surfaces, and summary statistics
 - ✅ Extended data infrastructure: 1M+ rows across 7 domains in consolidated `horizon/data/` tree
 - 🔄 Calibration against GRDC discharge (target <20% monthly RMSE at Aswan)
 - ✅ NSGA-II Pareto optimizer with 3 compromise modes + benchmark policies
