@@ -23,7 +23,7 @@ When Ethiopia fills GERD faster for power generation, the cascade hits downstrea
 ## Solution
 RDST (Nile Digital Twin) is a policy what-if sandbox built for the **CASSINI Hackathon — Space for Water track**. It connects satellite observations to real-world KPIs through a physics-based river simulator:
 
-- **Dual-engine architecture**: A Python sim engine for rapid prototyping and a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports both monthly time-steps (240 months in ~10 ms) and daily-resolution simulation with configurable reporting frequency, plus a fast-action API for optimizer integration
+- **Dual-engine architecture**: A Python sim engine for rapid prototyping and a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports monthly time-steps (240 months in ~10 ms) with configurable reporting frequency, plus a fast-action API for optimizer integration
 - **Satellite-to-KPI validation chain**: ERA5 climate reanalysis drives all forcings; Sentinel-2 NDVI validates food KPIs against actual crop health over Gezira and the Delta. Historical baseline spans **~20 years (2005–2024)** via ERA5 reanalysis
 - **Map-first React dashboard** with animated month scrubber, NDVI satellite overlay, side-by-side compare view, and weighted scoring — policy sliders feel instant because the sim engine runs in milliseconds
 - **Dedicated pitch experience**: A purpose-built `nile-visualizer-app` with guided PitchPage walkthrough, TeamPage for introductions, and a BasinMap component that renders the full Nile basin with risk overlays
@@ -59,7 +59,8 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 - **Dual-engine architecture (Python + Rust)**: Python/numpy for rapid prototyping and full node-type coverage, with a **Rust-native core (`nrsm`)** compiled via PyO3/Maturin for production-grade performance. The Rust engine supports configurable time-steps (monthly or daily), reporting frequency control, and an optimizer fast-action API — pass release actions as a vector and get back simulation results in milliseconds.
 - **Satellite-to-KPI closed loop**: Sentinel-2 NDVI (2015+) + CGLS NDVI (pre-2015) modulates crop-water-productivity coefficients — *the food KPI is validated against what satellites actually saw*. This closes the space-data loop that most basin models leave open.
 - **Water value conversion**: Electricity prices at each dam node converted to water opportunity-cost in EUR/m³ using effective fall heights (GERD: 145 m, Aswan: 111 m, Merowe: 68 m) — enabling direct comparison of energy revenue vs. downstream water impacts.
-- **Fast enough for interactivity**: One full 240-month simulation run ≈ **10 ms** — sliders feel instant, not batch jobs. Explore dozens of what-if combinations during a live pitch.
+- **NSGA-II Pareto optimizer**: Multi-objective evolutionary search over compressed piecewise-constant release schedules. Three compromise modes let you choose what matters: `energy_food` (prefer hydropower + service reliability), `balanced` (keep energy, food, spill, storage visible), or `storage_safe` (favor ending with more water in reservoirs). The full Pareto frontier is written so humans can pick a different policy afterwards.
+- **Benchmark policies**: Built-in baselines (`full_production`, `no_production`, `constant_50`, `inflow_proxy`, `storage_guardrail`) let you compare any simple rule against the optimizer's output with one command. Benchmark results feed directly into the plotting module for side-by-side comparison figures.
 - **Mass conservation verified to <0.1%**: Golden test ensures total inflow = outflow + evaporation + storage change over any period. Wrong mass balance poisons every demo number — this guard prevents silent regressions.
 - **Calibrated against real data**: Simulated Aswan discharge validated against GRDC observed monthly discharge; target **<20% relative RMSE** via grid search over source catchment scaling and Sudd evaporation fraction.
 - **Formal output contracts**: `SIMULATOR_OUTPUT_CONTRACT.md` documents the exact shape of simulation results, enabling reliable downstream consumption by both the dashboard and external tools.
@@ -71,7 +72,7 @@ Four layers with hard interfaces — each layer has a well-defined contract so t
 ## Demo Flow
 **Dashboard layout (map-first):** Left rail = policy sliders (GERD release, Gezira irrigation area, min delta flow, scoring weights). Center = animated MapLibre map with node radius ∝ `√(storage)` and reach stroke width ∝ monthly flow. Right rail = KPI sparklines + score breakdown. Bottom tray = saved scenarios. Month scrubber animates the full 240-month period.
 
-Three scenarios walk through a progressive story — each building on the last:
+The demo walks through **30+ pre-built scenarios** organized into a progressive story — each building on the last:
 
 1. **"What does normal look like?"** → Load the **Baseline** scenario (historical policy). Score 72/100. Map shows 240 months of flows; KPI sparklines for water (~94% served), food (~12 Mt/yr), energy (~38 TWh/year) animate with the month scrubber. Toggle NDVI overlay — watch satellite-observed crop health pulse over Gezira and the Delta. *This establishes credibility: the model reproduces reality.*
 
@@ -101,7 +102,7 @@ Three scenarios walk through a progressive story — each building on the last:
 - **DevOps:** Docker Compose, GitHub Actions — `docker compose up` produces a working app in <5 min
 - **Testing:** pytest with golden-file mass-balance test, fixture-based schema validation, integration tests per API endpoint
 
-- **Scenario-driven storytelling:** The visualizer app's scenario catalog lets presenters jump between historical events (1963 flood), current conditions (2005 baseline), extreme stress tests (upstream holdback), and future projections (2040 energy transition, 2075 emergency) — each with pre-computed results for instant demo.
+- **Scenario-driven storytelling:** The visualizer app's scenario catalog spans **30+ pre-built scenarios** across past events (1963 flood, 2005 baseline, 2010 drought, 2012 wet season, 2015 low storage), future projections (2027 operations check through 2100 long-range), and extreme stress tests (90-day upstream holdback) — each with pre-computed per-node CSV results for instant visualization.
 
 ## Team Fit
 - **5-person team** built this over a single hackathon weekend — **~60 person-hours after sleep/food**, yet shipped a working full-stack application with physics-based simulation, geospatial data pipeline, and interactive dashboard
@@ -114,8 +115,6 @@ Three scenarios walk through a progressive story — each building on the last:
 ## Next Steps
 - **Calibration (immediate):** Tune source catchment scaling + Sudd evaporation fraction until simulated Aswan discharge achieves <20% monthly RMSE against GRDC observed data — the single most important validation step.
 - **NDVI closed-loop:** Sentinel-2 NDVI modulates crop-water-productivity coefficient, closing the satellite-to-KPI validation chain (stretch goal).
-- **NSGA-II Pareto optimizer:** Multi-objective evolutionary search over compressed piecewise-constant release schedules. Three compromise modes let you choose what matters: `energy_food` (prefer hydropower + service reliability), `balanced` (keep energy, food, spill, storage visible), or `storage_safe` (favor ending with more water in reservoirs). The full Pareto frontier is written so humans can pick a different policy afterwards.
-- **Benchmark policies:** Built-in baselines (`full_production`, `no_production`, `constant_50`, `inflow_proxy`, `storage_guardrail`) let you compare any simple rule against the optimizer's output with one command. Benchmark results feed directly into the plotting module for side-by-side comparison figures.
 - **Finer granularity:** Add tributary nodes (Sobat, Bahr el Ghazal) and governorate-level irrigation zones for regional analysis.
 - **Climate scenarios:** Couple with CMIP6 downscaled projections for forward-looking drought/flood planning.
 - **Scenario catalog expansion:** The catalog now spans past events (1963 flood, 2005 baseline, 2010 drought, 2012 wet season, 2015 low storage, 2018 energy prices, 2020 balanced year, 2024 hot summer), future projections (2027 operations check, 2030 flood pulse, 2030 growth, 2035 two-year dry, 2040 energy transition, 2045 demand growth, 2050 five-year stress, 2060 hot low-inflow, 2075 emergency, 2100 long-range), and extreme scenarios (90-day upstream holdback). Each scenario includes pre-computed per-node CSV results for instant visualization.
